@@ -52,6 +52,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="gated">
       <head>
+        {/* set lang/dir from the saved (or browser) language before first paint so a
+            returning Arabic visitor never sees the LTR layout flash to RTL. The full
+            copy swap happens in Deck's effect; this only fixes direction early. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var l=localStorage.getItem('emanet-lang');if(!l){var n=(navigator.language||'').toLowerCase();l=n.indexOf('ar')===0?'ar':(n.indexOf('bs')===0?'bs':'en');}var d=document.documentElement;d.lang=l;d.dir=(l==='ar')?'rtl':'ltr';}catch(e){}})();",
+          }}
+        />
         {/* Fonts: Fraunces (display), Spline Sans Mono (technical), Amiri (Arabic), Switzer (body) */}
         {/* eslint-disable @next/next/no-page-custom-font -- CDN fonts kept per spec (no next/font) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

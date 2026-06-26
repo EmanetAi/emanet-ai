@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
 import Lenis from 'lenis';
+import { dict } from './dict';
 
 export default function Deck() {
   useEffect(() => {
@@ -21,6 +22,70 @@ export default function Deck() {
       if (GS && ST) { try { GS.registerPlugin(ST); } catch (e) { ST = null; } }
 
       var destroyed = false;
+
+      /* =====================================================
+         i18n — English lives in the JSX (captured at boot); bs/ar come from
+         ./dict. Imperative apply matches the rest of this file. On switch we
+         re-measure the thread, since text length + dir change the layout the
+         path is sampled from. ponytail: capture EN from the DOM instead of
+         duplicating it in the dict — English stays the no-JS / SEO fallback.
+         ===================================================== */
+      var EN_JS: any = {
+        'dl.get': 'What you get', 'dl.cost': 'What it costs', 'dl.approach': 'How we approach it',
+        'dl.stack': 'Stack', 'dl.example': 'Example from our work',
+        'aria.gate': 'Press the seal to be entrusted', 'aria.close': 'Close detail',
+      };
+      var LOCS = ['en', 'bs', 'ar'];
+      var curLoc = 'en';
+      function T(k: string) {
+        if (curLoc !== 'en') { var d: any = (dict as any)[curLoc]; if (d && d.t && d.t[k] != null) return d.t[k]; }
+        return EN_JS[k];
+      }
+      function captureOriginals() {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (el: any) {
+          if (el.__en == null) el.__en = el.innerHTML;
+        });
+      }
+      function applyLocale(loc: string) {
+        if (LOCS.indexOf(loc) < 0) loc = 'en';
+        curLoc = loc;
+        var d: any = loc === 'en' ? null : (dict as any)[loc];
+        Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (el: any) {
+          var k = el.getAttribute('data-i18n');
+          var v = loc === 'en' ? el.__en : (d && d.t && d.t[k] != null ? d.t[k] : el.__en);
+          if (v != null && el.innerHTML !== v) el.innerHTML = v;
+        });
+        var html = document.documentElement;
+        html.setAttribute('lang', loc);
+        html.setAttribute('dir', loc === 'ar' ? 'rtl' : 'ltr');
+        var g: any = document.getElementById('gate'); if (g) g.setAttribute('aria-label', T('aria.gate'));
+        var c: any = document.getElementById('detailClose'); if (c) c.setAttribute('aria-label', T('aria.close'));
+        Array.prototype.forEach.call(document.querySelectorAll('.langset .lang'), function (b: any) {
+          b.classList.toggle('on', b.getAttribute('data-lang') === loc);
+        });
+        try { localStorage.setItem('emanet-lang', loc); } catch (e) { }
+        /* text + dir changed the layout, so rebuild the thread from the new element
+           rects. rebuild() is entry-guarded, so this is a no-op before entry. */
+        requestAnimationFrame(function () { try { rebuild(); } catch (e) { } });
+      }
+      function detailFor(num: string): any {
+        var en: any = detailExtra[num] || {};
+        if (curLoc !== 'en') {
+          var d: any = (dict as any)[curLoc];
+          if (d && d.detail && d.detail[num]) {
+            return { approach: d.detail[num].approach || en.approach, priceRows: d.detail[num].priceRows || en.priceRows, examples: en.examples };
+          }
+        }
+        return en;
+      }
+      function detectLoc() {
+        var stored: any = null; try { stored = localStorage.getItem('emanet-lang'); } catch (e) { }
+        if (stored && LOCS.indexOf(stored) >= 0) return stored;
+        var n = (navigator.language || '').toLowerCase();
+        if (n.indexOf('ar') === 0) return 'ar';
+        if (n.indexOf('bs') === 0) return 'bs';
+        return 'en';
+      }
 
       /* =====================================================
          GEOMETRY — a single continuous {8/3} octagram (the
@@ -527,17 +592,17 @@ export default function Deck() {
         var deliver = dtxt(card, '.deliver .dv');
         var stackHtml = '';
         Array.prototype.forEach.call(card.querySelectorAll('.stack span'), function (s: any) { stackHtml += '<span>' + s.innerHTML + '</span>'; });
-        var ex = detailExtra[num] || { approach: '', examples: [] };
+        var ex = detailFor(num) || { approach: '', examples: [] };
         var exHtml = (ex.examples || []).map(function (e: any) { return '<a class="detail-ex" href="#' + e.id + '">' + e.t + '</a>'; }).join('');
         pbody.innerHTML =
           '<p class="detail-tag mono">' + tag + '</p>' +
           '<h2 class="detail-title display" id="detailTitle">' + title + '</h2>' +
           '<p class="detail-line">' + line + '</p>' +
-          '<div class="detail-block"><p class="detail-k mono">What you get</p><p class="detail-p">' + deliver + '</p></div>' +
-          (ex.priceRows ? '<div class="detail-block detail-price"><p class="detail-k mono">What it costs</p><div class="detail-prices">' + ex.priceRows.map(function (r: any) { return '<div class="prow"><span class="pl">' + r[0] + '</span><span class="pa">' + r[1] + '</span></div>'; }).join('') + '</div></div>' : '') +
-          '<div class="detail-block"><p class="detail-k mono">How we approach it</p><p class="detail-p">' + ex.approach + '</p></div>' +
-          '<div class="detail-block"><p class="detail-k mono">Stack</p><div class="stack">' + stackHtml + '</div></div>' +
-          (exHtml ? '<div class="detail-block"><p class="detail-k mono">Example from our work</p><div class="detail-ex-row">' + exHtml + '</div></div>' : '');
+          '<div class="detail-block"><p class="detail-k mono">' + T('dl.get') + '</p><p class="detail-p">' + deliver + '</p></div>' +
+          (ex.priceRows ? '<div class="detail-block detail-price"><p class="detail-k mono">' + T('dl.cost') + '</p><div class="detail-prices">' + ex.priceRows.map(function (r: any) { return '<div class="prow"><span class="pl">' + r[0] + '</span><span class="pa">' + r[1] + '</span></div>'; }).join('') + '</div></div>' : '') +
+          '<div class="detail-block"><p class="detail-k mono">' + T('dl.approach') + '</p><p class="detail-p">' + ex.approach + '</p></div>' +
+          '<div class="detail-block"><p class="detail-k mono">' + T('dl.stack') + '</p><div class="stack">' + stackHtml + '</div></div>' +
+          (exHtml ? '<div class="detail-block"><p class="detail-k mono">' + T('dl.example') + '</p><div class="detail-ex-row">' + exHtml + '</div></div>' : '');
         Array.prototype.forEach.call(pbody.querySelectorAll('.detail-ex'), function (a: any) {
           a.addEventListener('click', function (ev: Event) {
             ev.preventDefault();
@@ -656,6 +721,15 @@ export default function Deck() {
          BOOT
          ===================================================== */
       function boot() {
+        /* capture English from the DOM, then apply the stored/detected locale
+           BEFORE the reveal/entry timeline reads any text (entry samples the
+           headline's .w spans, which differ per language). */
+        captureOriginals();
+        applyLocale(detectLoc());
+        Array.prototype.forEach.call(document.querySelectorAll('.langset .lang'), function (b: any) {
+          b.addEventListener('click', function () { applyLocale(b.getAttribute('data-lang')); });
+        });
+
         setupReveals();
         introDraw();
 
@@ -746,16 +820,16 @@ export default function Deck() {
       {/* ===== THE GATE / SEAL CEREMONY ===== */}
       <div id="gate" role="button" tabIndex={0} aria-label="Press the seal to be entrusted">
         <div className="gate-inner">
-          <p className="hero-eyebrow mono">AMANAH — A TRUST HELD IN SAFEKEEPING</p>
+          <p className="hero-eyebrow mono" data-i18n="gate.eyebrow">AMANAH — A TRUST HELD IN SAFEKEEPING</p>
           <div className="seal-stage" id="sealStage">
             <div className="gate-half left"><div className="svg-wrap" id="wrapL"></div></div>
             <div className="gate-half right"><div className="svg-wrap" id="wrapR"></div></div>
             <div className="seam"></div>
           </div>
           <p className="hero-arabic arabic" lang="ar">أمانة</p>
-          <p className="hero-hint mono">press the seal to be entrusted</p>
+          <p className="hero-hint mono" data-i18n="gate.hint">press the seal to be entrusted</p>
         </div>
-        <div className="cursor mono" id="cursor"><span>press to be entrusted</span></div>
+        <div className="cursor mono" id="cursor"><span data-i18n="gate.cursor">press to be entrusted</span></div>
       </div>
 
       {/* ===== INTERIOR (the journey the thread routes through) ===== */}
@@ -763,11 +837,16 @@ export default function Deck() {
 
         <header className="topbar" id="topbar">
           <nav className="topnav">
-            <a href="#practice">The Practice</a>
-            <a href="#keepers">The Keepers</a>
-            <a href="#begin">Pricing</a>
-            <a href="#contact">Contact</a>
+            <a href="#practice" data-i18n="nav.practice">The Practice</a>
+            <a href="#keepers" data-i18n="nav.keepers">The Keepers</a>
+            <a href="#begin" data-i18n="nav.pricing">Pricing</a>
+            <a href="#contact" data-i18n="nav.contact">Contact</a>
           </nav>
+          <div className="langset" role="group" aria-label="Language">
+            <button type="button" className="lang on" data-lang="en" lang="en">EN</button>
+            <button type="button" className="lang" data-lang="bs" lang="bs">BS</button>
+            <button type="button" className="lang" data-lang="ar" lang="ar">AR</button>
+          </div>
         </header>
 
         {/* THRESHOLD */}
@@ -776,39 +855,39 @@ export default function Deck() {
           <div className="wrap">
             <div className="threshold-grid">
               <div>
-                <p className="threshold-sub mono"><span className="node-pip"></span>NODE 00 · THE AMANAH</p>
-                <h1 className="display threshold-h">
+                <p className="threshold-sub mono"><span className="node-pip"></span><span data-i18n="th.sub">NODE 00 · THE AMANAH</span></p>
+                <h1 className="display threshold-h" data-i18n="th.h">
                   <span className="ln"><span className="w">We</span> <span className="w">hold</span> <span className="w">your</span></span>
                   <span className="ln"><span className="w">technology</span></span>
                   <span className="ln"><span className="w">in</span> <span className="w">trust.</span></span>
                 </h1>
-                <p className="threshold-thesis reveal">Amanah (<span className="arabic" lang="ar">أمانة</span>) is a trust placed in your keeping, to be returned whole. We build software the same way — what you hand us, we look after, and hand back intact.</p>
+                <p className="threshold-thesis reveal" data-i18n="th.thesis">Amanah (<span className="arabic" lang="ar">أمانة</span>) is a trust placed in your keeping, to be returned whole. We build software the same way — what you hand us, we look after, and hand back intact.</p>
               </div>
               <div className="threshold-side reveal">
-                <p>An engineering studio kept like a workshop, not a shop floor. The code, the systems, and the quiet between releases.</p>
+                <p data-i18n="th.side">An engineering studio kept like a workshop, not a shop floor. The code, the systems, and the quiet between releases.</p>
               </div>
             </div>
           </div>
-          <div className="scrollcue mono" id="scrollcue"><span className="cue-dot"></span><span className="cue-line"></span>follow the line</div>
+          <div className="scrollcue mono" id="scrollcue"><span className="cue-dot"></span><span className="cue-line"></span><span data-i18n="th.cue">follow the line</span></div>
         </section>
 
         {/* PRACTICE — five service nodes */}
         <section className="band practice" id="practice">
           <div className="inner section-head reveal">
-            <span className="idx">The Practice</span>
-            <h2 className="display">Five disciplines,<br />carried on one thread.</h2>
-            <p>In plain words: we build the websites, apps, AI tools, and behind-the-scenes systems your business runs on — and look after them once they are live. Each one below is a kind of work we take on.</p>
+            <span className="idx" data-i18n="pr.idx">The Practice</span>
+            <h2 className="display" data-i18n="pr.h">Five disciplines,<br />carried on one thread.</h2>
+            <p data-i18n="pr.p">In plain words: we build the websites, apps, AI tools, and behind-the-scenes systems your business runs on — and look after them once they are live. Each one below is a kind of work we take on.</p>
           </div>
 
           {/* NODE 01 */}
           <div className="scene right" id="node-1">
             <i className="anchor a-left" data-anchor="2" data-beat="" aria-hidden="true"></i>
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">01</span><span className="tag">Node 01 · AI automation</span></div>
-              <h3 className="display">AI automation &amp; agents</h3>
-              <p className="line">Smart assistants that take over the repetitive work in your business — answering routine questions, moving information between your tools, sorting and drafting — and that know when to stop and check with you.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">The boring, repeated tasks handled for you, the hours you save actually counted, and a simple off-switch you control.</span></p>
-              <div className="flex"><span className="pip"></span><span>Runs on hardware you control — by voice, chat, or API</span></div>
+              <div className="nlabel"><span className="node-pip"></span><span className="num">01</span><span className="tag" data-i18n="n1.tag">Node 01 · AI automation</span></div>
+              <h3 className="display" data-i18n="n1.h">AI automation &amp; agents</h3>
+              <p className="line" data-i18n="n1.line">Smart assistants that take over the repetitive work in your business — answering routine questions, moving information between your tools, sorting and drafting — and that know when to stop and check with you.</p>
+              <p className="deliver"><span className="dk mono" data-i18n="label.get">What you get</span><span className="dv" data-i18n="n1.dv">The boring, repeated tasks handled for you, the hours you save actually counted, and a simple off-switch you control.</span></p>
+              <div className="flex"><span className="pip"></span><span data-i18n="n1.flex">Runs on hardware you control — by voice, chat, or API</span></div>
               <div className="stack"><span>Orchestration</span><span>Tool use</span><span>On-device</span><span>RAG</span></div>
             </div>
           </div>
@@ -817,10 +896,10 @@ export default function Deck() {
           <div className="scene left" id="node-2">
             <i className="anchor a-right" data-anchor="3" data-beat="" aria-hidden="true"></i>
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">02</span><span className="tag">Node 02 · Software</span></div>
-              <h3 className="display">Web &amp; app development</h3>
-              <p className="line">We build your website or app — the thing your customers actually see and use — and make sure it is fast, easy to use, and still working long after launch.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">A finished website or app — usually in about three months — that looks right, works on phones, and is built to last, not just to launch.</span></p>
+              <div className="nlabel"><span className="node-pip"></span><span className="num">02</span><span className="tag" data-i18n="n2.tag">Node 02 · Software</span></div>
+              <h3 className="display" data-i18n="n2.h">Web &amp; app development</h3>
+              <p className="line" data-i18n="n2.line">We build your website or app — the thing your customers actually see and use — and make sure it is fast, easy to use, and still working long after launch.</p>
+              <p className="deliver"><span className="dk mono" data-i18n="label.get">What you get</span><span className="dv" data-i18n="n2.dv">A finished website or app — usually in about three months — that looks right, works on phones, and is built to last, not just to launch.</span></p>
               <div className="stack"><span>TypeScript</span><span>Next.js</span><span>Mobile</span><span>Design systems</span></div>
             </div>
           </div>
@@ -829,10 +908,10 @@ export default function Deck() {
           <div className="scene right" id="node-3">
             <i className="anchor a-left" data-anchor="4" data-beat="" aria-hidden="true"></i>
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">03</span><span className="tag">Node 03 · Data engineering</span></div>
-              <h3 className="display">Data engineering</h3>
-              <p className="line">We get your scattered information into one tidy, trustworthy place — so the numbers you make decisions on are actually right.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Reports and dashboards you can trust, with the messy data cleaned up and organised behind them — and kept private.</span></p>
+              <div className="nlabel"><span className="node-pip"></span><span className="num">03</span><span className="tag" data-i18n="n3.tag">Node 03 · Data engineering</span></div>
+              <h3 className="display" data-i18n="n3.h">Data engineering</h3>
+              <p className="line" data-i18n="n3.line">We get your scattered information into one tidy, trustworthy place — so the numbers you make decisions on are actually right.</p>
+              <p className="deliver"><span className="dk mono" data-i18n="label.get">What you get</span><span className="dv" data-i18n="n3.dv">Reports and dashboards you can trust, with the messy data cleaned up and organised behind them — and kept private.</span></p>
               <div className="stack"><span>Pipelines</span><span>Warehouse</span><span>Streaming</span><span>Governance</span></div>
             </div>
           </div>
@@ -841,10 +920,10 @@ export default function Deck() {
           <div className="scene left" id="node-4">
             <i className="anchor a-right" data-anchor="5" data-beat="" aria-hidden="true"></i>
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">04</span><span className="tag">Node 04 · Cloud / DevOps</span></div>
-              <h3 className="display">Cloud &amp; DevOps</h3>
-              <p className="line">We set up and look after the place your software lives online — so it stays up, runs fast, and does not hand you a surprise bill.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Your software running reliably online, updates that go out without drama, and a monthly bill you can actually read.</span></p>
+              <div className="nlabel"><span className="node-pip"></span><span className="num">04</span><span className="tag" data-i18n="n4.tag">Node 04 · Cloud / DevOps</span></div>
+              <h3 className="display" data-i18n="n4.h">Cloud &amp; DevOps</h3>
+              <p className="line" data-i18n="n4.line">We set up and look after the place your software lives online — so it stays up, runs fast, and does not hand you a surprise bill.</p>
+              <p className="deliver"><span className="dk mono" data-i18n="label.get">What you get</span><span className="dv" data-i18n="n4.dv">Your software running reliably online, updates that go out without drama, and a monthly bill you can actually read.</span></p>
               <div className="stack"><span>GCP</span><span>Terraform</span><span>CI·CD</span><span>Observability</span></div>
             </div>
           </div>
@@ -853,10 +932,10 @@ export default function Deck() {
           <div className="scene right" id="node-5">
             <i className="anchor a-left" data-anchor="6" data-beat="" aria-hidden="true"></i>
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">05</span><span className="tag">Node 05 · Security &amp; reliability</span></div>
-              <h3 className="display">Security &amp; reliability</h3>
-              <p className="line">We keep what we build safe and online — your data protected, your logins locked down, and your site up when customers need it.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Protection built in from day one, your passwords and access handled properly, and backups that are actually tested. We make what we build safe by default — we do not pose as your security team.</span></p>
+              <div className="nlabel"><span className="node-pip"></span><span className="num">05</span><span className="tag" data-i18n="n5.tag">Node 05 · Security &amp; reliability</span></div>
+              <h3 className="display" data-i18n="n5.h">Security &amp; reliability</h3>
+              <p className="line" data-i18n="n5.line">We keep what we build safe and online — your data protected, your logins locked down, and your site up when customers need it.</p>
+              <p className="deliver"><span className="dk mono" data-i18n="label.get">What you get</span><span className="dv" data-i18n="n5.dv">Protection built in from day one, your passwords and access handled properly, and backups that are actually tested. We make what we build safe by default — we do not pose as your security team.</span></p>
               <div className="stack"><span>Secure by default</span><span>Secrets &amp; access</span><span>Backups</span><span>Uptime</span></div>
             </div>
           </div>
@@ -866,34 +945,34 @@ export default function Deck() {
         <section className="band keepers" id="keepers">
           <i className="anchor a-right" data-anchor="7" data-beat="" aria-hidden="true"></i>
           <div className="inner section-head reveal">
-            <span className="idx"><span className="node-pip"></span>The Keepers</span>
-            <h2 className="display">Four hands<br />on the same line.</h2>
-            <p>A small studio on purpose. Each keeper signs their own node. One named engineer owns your work end to end and answers for it directly — no handoff to people you never met.</p>
+            <span className="idx"><span className="node-pip"></span><span data-i18n="ke.idx">The Keepers</span></span>
+            <h2 className="display" data-i18n="ke.h">Four hands<br />on the same line.</h2>
+            <p data-i18n="ke.p">A small studio on purpose. Each keeper signs their own node. One named engineer owns your work end to end and answers for it directly — no handoff to people you never met.</p>
           </div>
           <div className="inner grid" id="keeper-grid">
             <div className="keeper reveal d1">
               <div className="av" data-rot="0"></div>
               <h3 className="kname">Ajdin Salihović</h3>
-              <p className="role">Data Engineer</p>
-              <p className="bio">Builds the pipelines and contracts the rest of us stand on.</p>
+              <p className="role" data-i18n="role.data">Data Engineer</p>
+              <p className="bio" data-i18n="bio.ajdin">Builds the pipelines and contracts the rest of us stand on.</p>
             </div>
             <div className="keeper reveal d2">
               <div className="av" data-rot="22.5"></div>
               <h3 className="kname">Tarik Topalović</h3>
-              <p className="role">AI Automation Engineer</p>
-              <p className="bio">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
+              <p className="role" data-i18n="role.ai">AI Automation Engineer</p>
+              <p className="bio" data-i18n="bio.tarik">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
             </div>
             <div className="keeper reveal d3">
               <div className="av" data-rot="33.75"></div>
               <h3 className="kname">Eman Čičkušić</h3>
-              <p className="role">DevOps Engineer</p>
-              <p className="bio">Keeps the deploys boring and the lights on.</p>
+              <p className="role" data-i18n="role.devops">DevOps Engineer</p>
+              <p className="bio" data-i18n="bio.eman">Keeps the deploys boring and the lights on.</p>
             </div>
             <div className="keeper reveal d1">
               <div className="av" data-rot="11.25"></div>
               <h3 className="kname">Aner Atović</h3>
-              <p className="role">Full-Stack Engineer</p>
-              <p className="bio">From schema to screen — the whole stack, held together.</p>
+              <p className="role" data-i18n="role.fullstack">Full-Stack Engineer</p>
+              <p className="bio" data-i18n="bio.aner">From schema to screen — the whole stack, held together.</p>
             </div>
           </div>
         </section>
@@ -902,57 +981,57 @@ export default function Deck() {
         <section className="band work" id="work">
           <i className="anchor a-right" data-anchor="8" aria-hidden="true"></i>
           <div className="inner section-head reveal">
-            <span className="idx"><span className="node-pip"></span>Selected work</span>
-            <h2 className="display">Things we have<br />actually shipped.</h2>
-            <p>Real builds from the team — not client logos, not case-study theatre. The work, named plainly.</p>
+            <span className="idx"><span className="node-pip"></span><span data-i18n="wo.idx">Selected work</span></span>
+            <h2 className="display" data-i18n="wo.h">Things we have<br />actually shipped.</h2>
+            <p data-i18n="wo.p">Real builds from the team — not client logos, not case-study theatre. The work, named plainly.</p>
           </div>
           <div className="inner work-grid">
             <article className="wcard reveal d1" id="work-parallel-claude">
               <p className="wk-who mono">Tarik</p>
               <h3 className="wk-title display">Parallel-Claude</h3>
-              <p className="wk-line">Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.</p>
+              <p className="wk-line" data-i18n="wl.parallel">Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.</p>
               <div className="stack"><span>Python</span><span>Multi-agent</span><span>CLI</span></div>
             </article>
             <article className="wcard reveal d2" id="work-hyperagent-relay">
               <p className="wk-who mono">Tarik</p>
               <h3 className="wk-title display">HyperAgent Relay</h3>
-              <p className="wk-line">Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.</p>
+              <p className="wk-line" data-i18n="wl.relay">Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.</p>
               <div className="stack"><span>Python</span><span>Webhooks</span></div>
             </article>
             <article className="wcard reveal d3" id="work-mostay">
               <p className="wk-who mono">Tarik</p>
               <h3 className="wk-title display">MoStay</h3>
-              <p className="wk-line">Website for a boutique hotel in Mostar — fast static Next.js.</p>
+              <p className="wk-line" data-i18n="wl.mostay">Website for a boutique hotel in Mostar — fast static Next.js.</p>
               <div className="stack"><span>Next.js</span><span>Static</span></div>
             </article>
             <article className="wcard reveal d1" id="work-cloud-ops">
               <p className="wk-who mono">Eman</p>
               <h3 className="wk-title display">Intelligent Cloud-Ops Agent</h3>
-              <p className="wk-line">A LangChain agent that operates and reasons over Google Cloud infrastructure.</p>
+              <p className="wk-line" data-i18n="wl.cloudops">A LangChain agent that operates and reasons over Google Cloud infrastructure.</p>
               <div className="stack"><span>LangChain</span><span>GCP</span><span>Python</span></div>
             </article>
             <article className="wcard reveal d2" id="work-pipeline">
               <p className="wk-who mono">Eman</p>
               <h3 className="wk-title display">Real-time Serverless Pipeline</h3>
-              <p className="wk-line">A streaming, serverless data pipeline on Google Cloud.</p>
+              <p className="wk-line" data-i18n="wl.pipeline">A streaming, serverless data pipeline on Google Cloud.</p>
               <div className="stack"><span>GCP</span><span>Streaming</span><span>Serverless</span></div>
             </article>
             <article className="wcard reveal d3" id="work-classroom">
               <p className="wk-who mono">Eman</p>
               <h3 className="wk-title display">Classroom 2.0</h3>
-              <p className="wk-line">Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.</p>
+              <p className="wk-line" data-i18n="wl.classroom">Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.</p>
               <div className="stack"><span>Kotlin</span><span>Compose</span><span>Firebase</span></div>
             </article>
             <article className="wcard reveal d1" id="work-iac">
               <p className="wk-who mono">Eman</p>
               <h3 className="wk-title display">Cloud security &amp; IaC labs</h3>
-              <p className="wk-line">Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.</p>
+              <p className="wk-line" data-i18n="wl.iac">Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.</p>
               <div className="stack"><span>Terraform</span><span>GCP</span><span>Security</span></div>
             </article>
             <article className="wcard reveal d2" id="work-dataviz">
               <p className="wk-who mono">Ajdin</p>
               <h3 className="wk-title display">Data visualization &amp; research</h3>
-              <p className="wk-line">Exploratory data analysis and visualization in Python, including a Spotify dataset study.</p>
+              <p className="wk-line" data-i18n="wl.dataviz">Exploratory data analysis and visualization in Python, including a Spotify dataset study.</p>
               <div className="stack"><span>Python</span><span>Pandas</span><span>Notebooks</span></div>
             </article>
           </div>
@@ -963,13 +1042,13 @@ export default function Deck() {
           <i className="anchor a-left" data-anchor="8" data-beat="" aria-hidden="true"></i>
           <div className="pgrid">
             <div className="pwrap">
-              <p className="p-eyebrow mono reveal"><span className="node-pip"></span>The line we keep</p>
-              <blockquote className="reveal">We take on what we can do <b>honestly and well</b> — and we are straight with you about the rest.</blockquote>
-              <p className="p-note reveal d1">It is a matter of care, not rules. The same instinct that makes us guard your data keeps us honest about the work — and quick to tell you, one to one, if we are not the right hands for it.</p>
+              <p className="p-eyebrow mono reveal"><span className="node-pip"></span><span data-i18n="pn.eyebrow">The line we keep</span></p>
+              <blockquote className="reveal" data-i18n="pn.quote">We take on what we can do <b>honestly and well</b> — and we are straight with you about the rest.</blockquote>
+              <p className="p-note reveal d1" data-i18n="pn.note">It is a matter of care, not rules. The same instinct that makes us guard your data keeps us honest about the work — and quick to tell you, one to one, if we are not the right hands for it.</p>
             </div>
             <aside className="pmark reveal d1" aria-hidden="true">
               <span className="pmark-ar arabic" lang="ar">أمانة</span>
-              <span className="pmark-gloss mono">amānah — a trust kept safe, and handed back whole</span>
+              <span className="pmark-gloss mono" data-i18n="pn.gloss">amānah — a trust kept safe, and handed back whole</span>
             </aside>
           </div>
         </section>
@@ -978,25 +1057,25 @@ export default function Deck() {
         <section className="band" id="proof">
           <i className="anchor a-right" data-anchor="9" aria-hidden="true"></i>
           <div className="inner section-head reveal">
-            <span className="idx">What we hold to</span>
-            <h2 className="display">We&apos;d rather show<br />than tell.</h2>
-            <p>No vanity metrics. The proof is in what we are willing to refuse, and what we are willing to be held to.</p>
+            <span className="idx" data-i18n="pf.idx">What we hold to</span>
+            <h2 className="display" data-i18n="pf.h">We&apos;d rather show<br />than tell.</h2>
+            <p data-i18n="pf.p">No vanity metrics. The proof is in what we are willing to refuse, and what we are willing to be held to.</p>
           </div>
           <div className="inner proof-grid">
             <div className="pcard reveal d1">
-              <p className="pt mono">Local-first</p>
-              <p className="pk display">Yours to unplug.</p>
-              <p className="pv">What we build runs on machines you control. Nothing leaves them that you did not send, and no cloud you cannot switch off.</p>
+              <p className="pt mono" data-i18n="pf.t1">Local-first</p>
+              <p className="pk display" data-i18n="pf.k1">Yours to unplug.</p>
+              <p className="pv" data-i18n="pf.v1">What we build runs on machines you control. Nothing leaves them that you did not send, and no cloud you cannot switch off.</p>
             </div>
             <div className="pcard reveal d2">
-              <p className="pt mono">Read the source</p>
-              <p className="pk display">Written to be audited.</p>
-              <p className="pv">Code legible enough to inherit, documented enough to trust, and handed on intact.</p>
+              <p className="pt mono" data-i18n="pf.t2">Read the source</p>
+              <p className="pk display" data-i18n="pf.k2">Written to be audited.</p>
+              <p className="pv" data-i18n="pf.v2">Code legible enough to inherit, documented enough to trust, and handed on intact.</p>
             </div>
             <div className="pcard reveal d3">
-              <p className="pt mono">Kept, not rented</p>
-              <p className="pk display">You own the keys.</p>
-              <p className="pv">Infrastructure you hold and dependencies you can remove. No lock-in dressed up as a feature.</p>
+              <p className="pt mono" data-i18n="pf.t3">Kept, not rented</p>
+              <p className="pk display" data-i18n="pf.k3">You own the keys.</p>
+              <p className="pv" data-i18n="pf.v3">Infrastructure you hold and dependencies you can remove. No lock-in dressed up as a feature.</p>
             </div>
           </div>
         </section>
@@ -1005,30 +1084,30 @@ export default function Deck() {
         <section className="band" id="begin">
           <i className="anchor a-right" aria-hidden="true"></i>
           <div className="inner section-head reveal">
-            <span className="idx"><span className="node-pip"></span>How we begin</span>
-            <h2 className="display">Start small.<br />Earn the rest.</h2>
-            <p>Trust is given in steps. We prove the work on something small before you commit to the whole build — no retainer, no lock-in.</p>
+            <span className="idx"><span className="node-pip"></span><span data-i18n="bg.idx">How we begin</span></span>
+            <h2 className="display" data-i18n="bg.h">Start small.<br />Earn the rest.</h2>
+            <p data-i18n="bg.p">Trust is given in steps. We prove the work on something small before you commit to the whole build — no retainer, no lock-in.</p>
           </div>
           <div className="inner begin-grid">
             <div className="bcard reveal d1">
-              <p className="bstep mono">Step one · The first cut</p>
-              <p className="bname display">A simple site, built for real</p>
-              <p className="bprice display">€200<small> fixed · one review cycle</small></p>
-              <p className="bdesc">We build the first version of a simple website — designed, coded, and live — then take it through one round of your feedback. You hold finished work in your hands before deciding on anything larger.</p>
-              <p className="bnote mono">Live site · one revision · yours to keep</p>
+              <p className="bstep mono" data-i18n="bg.step1">Step one · The first cut</p>
+              <p className="bname display" data-i18n="bg.name1">A simple site, built for real</p>
+              <p className="bprice display" data-i18n="bg.price1">€200<small> fixed · one review cycle</small></p>
+              <p className="bdesc" data-i18n="bg.desc1">We build the first version of a simple website — designed, coded, and live — then take it through one round of your feedback. You hold finished work in your hands before deciding on anything larger.</p>
+              <p className="bnote mono" data-i18n="bg.note1">Live site · one revision · yours to keep</p>
             </div>
             <div className="bcard reveal d2">
-              <p className="bstep mono">Step two · The full build</p>
-              <p className="bname display">Scoped together, once trust is earned</p>
-              <p className="bprice display">Quoted plainly<small> after the first cut</small></p>
-              <p className="bdesc">When the first cut has earned it, we scope the rest with you — the full site or product, priced line by line. You own the code and the keys; we hand it back whole.</p>
-              <p className="bnote mono">You own everything we build</p>
+              <p className="bstep mono" data-i18n="bg.step2">Step two · The full build</p>
+              <p className="bname display" data-i18n="bg.name2">Scoped together, once trust is earned</p>
+              <p className="bprice display" data-i18n="bg.price2">Quoted plainly<small> after the first cut</small></p>
+              <p className="bdesc" data-i18n="bg.desc2">When the first cut has earned it, we scope the rest with you — the full site or product, priced line by line. You own the code and the keys; we hand it back whole.</p>
+              <p className="bnote mono" data-i18n="bg.note2">You own everything we build</p>
             </div>
           </div>
           <div className="inner begin-cta reveal d1">
             <a className="cta" href="mailto:salam@emanet.ai?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
               <span className="ar arabic" aria-hidden="true">أمانة</span>
-              <span>Begin with the first cut</span>
+              <span data-i18n="bg.cta">Begin with the first cut</span>
             </a>
           </div>
         </section>
@@ -1038,16 +1117,16 @@ export default function Deck() {
           <i className="anchor a-left" data-anchor="10" style={{ top: '80px' }} aria-hidden="true"></i>
           <div className="footer-mark" id="footerMark" aria-hidden="true"></div>
           <div className="inner">
-            <div className="pretitle mono reveal">The line returns · <span className="arabic" lang="ar">أمانة</span></div>
-            <h2 className="display reveal">Place a trust<br />in <em>steady hands.</em></h2>
+            <div className="pretitle mono reveal" data-i18n="ft.pretitle">The line returns · <span className="arabic" lang="ar">أمانة</span></div>
+            <h2 className="display reveal" data-i18n="ft.h">Place a trust<br />in <em>steady hands.</em></h2>
             <a className="cta reveal d1" href="mailto:salam@emanet.ai">
               <span className="ar" aria-hidden="true">أمانة</span>
-              <span>Place your trust</span>
+              <span data-i18n="ft.cta">Place your trust</span>
             </a>
-            <p className="cta-fallback reveal d1">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></p>
+            <p className="cta-fallback reveal d1" data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></p>
 
             <div className="footrow">
-              <div className="sig">Held in trust. <span className="ar" aria-hidden="true">أمانة</span></div>
+              <div className="sig" data-i18n="ft.sig">Held in trust. <span className="ar" aria-hidden="true">أمانة</span></div>
               <div className="legal">Emanet AI · 2026 · salam@emanet.ai</div>
             </div>
           </div>
