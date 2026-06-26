@@ -679,10 +679,16 @@ export default function Deck() {
         {/* PRINCIPLE — the one emerald breath, the halal ethos */}
         <section id="principle">
           <i className="anchor a-left" data-anchor="8" data-beat="" aria-hidden="true"></i>
-          <div className="pwrap">
-            <p className="p-eyebrow mono reveal"><span className="node-pip"></span>The line we keep</p>
-            <blockquote className="reveal">We keep some trusts by <b>refusing others</b> — no riba, no work that betrays the amanah.</blockquote>
-            <p className="p-note reveal d1">It is a matter of care, not austerity. The same instinct that makes us guard your data makes us decline the work we would not want held against us.</p>
+          <div className="pgrid">
+            <div className="pwrap">
+              <p className="p-eyebrow mono reveal"><span className="node-pip"></span>The line we keep</p>
+              <blockquote className="reveal">We keep some trusts by <b>refusing others</b> — no riba, no work that betrays the amanah.</blockquote>
+              <p className="p-note reveal d1">It is a matter of care, not austerity. The same instinct that makes us guard your data makes us decline the work we would not want held against us.</p>
+            </div>
+            <aside className="pmark reveal d1" aria-hidden="true">
+              <span className="pmark-ar arabic">أمانة</span>
+              <span className="pmark-gloss mono">amānah — the trust we keep, or decline</span>
+            </aside>
           </div>
         </section>
 
