@@ -531,7 +531,7 @@ export default function Deck() {
         var exHtml = (ex.examples || []).map(function (e: any) { return '<a class="detail-ex" href="#' + e.id + '">' + e.t + '</a>'; }).join('');
         pbody.innerHTML =
           '<p class="detail-tag mono">' + tag + '</p>' +
-          '<h2 class="detail-title display">' + title + '</h2>' +
+          '<h2 class="detail-title display" id="detailTitle">' + title + '</h2>' +
           '<p class="detail-line">' + line + '</p>' +
           '<div class="detail-block"><p class="detail-k mono">What you get</p><p class="detail-p">' + deliver + '</p></div>' +
           (ex.priceRows ? '<div class="detail-block detail-price"><p class="detail-k mono">What it costs</p><div class="detail-prices">' + ex.priceRows.map(function (r: any) { return '<div class="prow"><span class="pl">' + r[0] + '</span><span class="pa">' + r[1] + '</span></div>'; }).join('') + '</div></div>' : '') +
@@ -623,7 +623,25 @@ export default function Deck() {
         if (pclose) pclose.addEventListener('click', function () { closeDetail(); });
         if (pback) pback.addEventListener('click', function () { closeDetail(); });
       }
-      function onDetailKey(e: any) { if (e.key === 'Escape' && detailOpen) { e.preventDefault(); closeDetail(); } }
+      function focusablesIn() {
+        if (!panel) return [];
+        return Array.prototype.slice.call(panel.querySelectorAll(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input, select, textarea'
+        )).filter(function (el: any) { return el.offsetParent !== null; });
+      }
+      function onDetailKey(e: any) {
+        if (!detailOpen) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeDetail(); return; }
+        if (e.key === 'Tab') {
+          /* trap focus inside the open dialog (WCAG 2.1.2) */
+          var f = focusablesIn();
+          if (!f.length) return;
+          var first = f[0], last = f[f.length - 1], a: any = document.activeElement;
+          var inside = panel && panel.contains(a);
+          if (e.shiftKey && (a === first || !inside)) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && (a === last || !inside)) { e.preventDefault(); first.focus(); }
+        }
+      }
       document.addEventListener('keydown', onDetailKey);
 
       /* ---------- nav solidify ---------- */
@@ -711,7 +729,7 @@ export default function Deck() {
         <path id="thread-base" className="thread-path" d="" />
         <path id="thread-live" className="thread-path" d="" />
         <g id="token" opacity="0">
-          <circle className="halo" cx="0" cy="0" r="10" />
+          <circle className="halo" cx="0" cy="0" r="14" />
           <circle className="core" cx="0" cy="0" r="3.4" />
         </g>
       </svg>
@@ -734,7 +752,7 @@ export default function Deck() {
             <div className="gate-half right"><div className="svg-wrap" id="wrapR"></div></div>
             <div className="seam"></div>
           </div>
-          <p className="hero-arabic arabic">أمانة</p>
+          <p className="hero-arabic arabic" lang="ar">أمانة</p>
           <p className="hero-hint mono">press the seal to be entrusted</p>
         </div>
         <div className="cursor mono" id="cursor"><span>press to be entrusted</span></div>
@@ -747,6 +765,7 @@ export default function Deck() {
           <nav className="topnav">
             <a href="#practice">The Practice</a>
             <a href="#keepers">The Keepers</a>
+            <a href="#begin">Pricing</a>
             <a href="#contact">Contact</a>
           </nav>
         </header>
@@ -763,7 +782,7 @@ export default function Deck() {
                   <span className="ln"><span className="w">technology</span></span>
                   <span className="ln"><span className="w">in</span> <span className="w">trust.</span></span>
                 </h1>
-                <p className="threshold-thesis reveal">Amanah (<span className="arabic">أمانة</span>) is a trust placed in your keeping, to be returned whole. We build software the same way — what you hand us, we look after, and hand back intact.</p>
+                <p className="threshold-thesis reveal">Amanah (<span className="arabic" lang="ar">أمانة</span>) is a trust placed in your keeping, to be returned whole. We build software the same way — what you hand us, we look after, and hand back intact.</p>
               </div>
               <div className="threshold-side reveal">
                 <p>An engineering studio kept like a workshop, not a shop floor. The code, the systems, and the quiet between releases.</p>
@@ -854,25 +873,25 @@ export default function Deck() {
           <div className="inner grid" id="keeper-grid">
             <div className="keeper reveal d1">
               <div className="av" data-rot="0"></div>
-              <h4>Ajdin Salihović</h4>
+              <h3 className="kname">Ajdin Salihović</h3>
               <p className="role">Data Engineer</p>
               <p className="bio">Builds the pipelines and contracts the rest of us stand on.</p>
             </div>
             <div className="keeper reveal d2">
               <div className="av" data-rot="22.5"></div>
-              <h4>Tarik Topalović</h4>
+              <h3 className="kname">Tarik Topalović</h3>
               <p className="role">AI Automation Engineer</p>
               <p className="bio">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
             </div>
             <div className="keeper reveal d3">
               <div className="av" data-rot="33.75"></div>
-              <h4>Eman Čičkušić</h4>
+              <h3 className="kname">Eman Čičkušić</h3>
               <p className="role">DevOps Engineer</p>
               <p className="bio">Keeps the deploys boring and the lights on.</p>
             </div>
             <div className="keeper reveal d1">
               <div className="av" data-rot="11.25"></div>
-              <h4>Aner Atović</h4>
+              <h3 className="kname">Aner Atović</h3>
               <p className="role">Full-Stack Engineer</p>
               <p className="bio">From schema to screen — the whole stack, held together.</p>
             </div>
@@ -949,7 +968,7 @@ export default function Deck() {
               <p className="p-note reveal d1">It is a matter of care, not rules. The same instinct that makes us guard your data keeps us honest about the work — and quick to tell you, one to one, if we are not the right hands for it.</p>
             </div>
             <aside className="pmark reveal d1" aria-hidden="true">
-              <span className="pmark-ar arabic">أمانة</span>
+              <span className="pmark-ar arabic" lang="ar">أمانة</span>
               <span className="pmark-gloss mono">amānah — a trust kept safe, and handed back whole</span>
             </aside>
           </div>
@@ -1008,7 +1027,7 @@ export default function Deck() {
           </div>
           <div className="inner begin-cta reveal d1">
             <a className="cta" href="mailto:salam@emanet.ai?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
-              <span className="ar arabic">أمانة</span>
+              <span className="ar arabic" aria-hidden="true">أمانة</span>
               <span>Begin with the first cut</span>
             </a>
           </div>
@@ -1019,16 +1038,17 @@ export default function Deck() {
           <i className="anchor a-left" data-anchor="10" style={{ top: '80px' }} aria-hidden="true"></i>
           <div className="footer-mark" id="footerMark" aria-hidden="true"></div>
           <div className="inner">
-            <div className="pretitle mono reveal">The line returns · <span className="arabic">أمانة</span></div>
+            <div className="pretitle mono reveal">The line returns · <span className="arabic" lang="ar">أمانة</span></div>
             <h2 className="display reveal">Place a trust<br />in <em>steady hands.</em></h2>
             <a className="cta reveal d1" href="mailto:salam@emanet.ai">
-              <span className="ar">أمانة</span>
+              <span className="ar" aria-hidden="true">أمانة</span>
               <span>Place your trust</span>
             </a>
+            <p className="cta-fallback reveal d1">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></p>
 
             <div className="footrow">
-              <div className="sig">Held in trust. <span className="ar">أمانة</span></div>
-              <div className="legal">Emanet AI · MMXXVI · salam@emanet.ai</div>
+              <div className="sig">Held in trust. <span className="ar" aria-hidden="true">أمانة</span></div>
+              <div className="legal">Emanet AI · 2026 · salam@emanet.ai</div>
             </div>
           </div>
         </footer>
@@ -1036,10 +1056,10 @@ export default function Deck() {
       </div>{/* /shell */}
 
       {/* ===== SERVICE DETAIL OVERLAY (a card zooms into this fullscreen panel) ===== */}
-      <div className="detail-overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Service detail" aria-hidden="true">
+      <div className="detail-overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-labelledby="detailTitle" aria-hidden="true">
         <div className="detail-backdrop" id="detailBackdrop"></div>
         <div className="detail-panel" id="detailPanel">
-          <button className="detail-close" id="detailClose" type="button" aria-label="Close detail"><span aria-hidden="true">&times;</span></button>
+          <button className="detail-close" id="detailClose" type="button" aria-label="Close detail"><span aria-hidden="true">&#x2715;</span></button>
           <div className="detail-body" id="detailBody"></div>
         </div>
       </div>
