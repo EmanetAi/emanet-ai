@@ -467,23 +467,23 @@ export default function Deck() {
 
       var detailExtra: any = {
         '01': {
-          approach: 'We start by finding the few tasks worth automating, not every task we could. Each agent gets the narrowest tools that do the job, a written record of what it did, and a stop it must respect. Your own documents stay where they are — retrieval reads them without copying them somewhere you cannot see.',
+          approach: 'We start by finding the handful of tasks actually worth automating — the repetitive ones eating your team’s time — not everything we could. Each assistant gets only the access it needs, keeps a record of what it did, and a limit it must respect. Your own documents stay where they are; nothing is copied somewhere you cannot see.',
           examples: [{ t: 'Parallel-Claude', id: 'work-parallel-claude' }, { t: 'HyperAgent Relay', id: 'work-hyperagent-relay' }]
         },
         '02': {
-          approach: 'We ship a small working slice early and grow it in the open, so you are never waiting on a reveal. The code is written to be read by the next person, not just to pass today. We stay honest about what is done, what is rough, and what is still a guess.',
+          approach: 'We get a small working version in front of you early and grow it in the open, so you are never waiting months for a big reveal. We build it cleanly so the next person can pick it up — not just to scrape by today. And we stay honest about what is done, what is rough, and what is still a guess.',
           examples: [{ t: 'MoStay', id: 'work-mostay' }, { t: 'Classroom 2.0', id: 'work-classroom' }]
         },
         '03': {
-          approach: 'We treat the numbers as something we will be asked to defend, so lineage and tests come first, not last. Pipelines are built to fail loudly and recover quietly. The same care makes your data safe to query without it leaking where it should not.',
+          approach: 'We treat your numbers like something you will have to stand behind, so they are traceable and tested from the start. The plumbing is built to fail loudly and recover quietly. And the same care keeps your data safe to use without it leaking where it should not.',
           examples: [{ t: 'Real-time Serverless Pipeline', id: 'work-pipeline' }, { t: 'Data visualization & research', id: 'work-dataviz' }]
         },
         '04': {
-          approach: 'Everything that runs is described in code, so an environment can be rebuilt rather than remembered. Deploys are meant to be dull. We size infrastructure to real usage and read the bill with you, line by line.',
+          approach: 'Everything is written down as code, so your setup can be rebuilt instead of living in one person’s head. Updates are meant to be boring — no drama. We size things to what you actually use and read the bill with you, line by line.',
           examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }, { t: 'Cloud security & IaC labs', id: 'work-iac' }]
         },
         '05': {
-          approach: 'Security is a default we set on the first commit, not a review we schedule for the end. Secrets and access are handled with care, backups are tested, and uptime is something you only notice when it is gone. We make what we build safe by default — we do not pose as your security team.',
+          approach: 'We build safety in from the very first day, not as a check we schedule for the end. Passwords and access are handled carefully, backups are tested, and staying online is something you only think about when it is gone. We make what we build safe by default — we are not pretending to be your security team.',
           examples: [{ t: 'Cloud security & IaC labs', id: 'work-iac' }]
         }
       };
@@ -750,7 +750,7 @@ export default function Deck() {
           <div className="inner section-head reveal">
             <span className="idx">The Practice</span>
             <h2 className="display">Five disciplines,<br />carried on one thread.</h2>
-            <p>The trust passes from hand to hand and is never set down. Each node below is a place the line runs through.</p>
+            <p>In plain words: we build the websites, apps, AI tools, and behind-the-scenes systems your business runs on — and look after them once they are live. Each one below is a kind of work we take on.</p>
           </div>
 
           {/* NODE 01 */}
@@ -759,8 +759,8 @@ export default function Deck() {
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">01</span><span className="tag">Node 01 · AI automation</span></div>
               <h3 className="display">AI automation &amp; agents</h3>
-              <p className="line">Agents that do real work across your systems and your own documents — and know when to stop and ask.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Shipped automations with the hours saved measured, secure retrieval that lets your own data answer questions, and a kill switch you hold.</span></p>
+              <p className="line">Smart assistants that take over the repetitive work in your business — answering routine questions, moving information between your tools, sorting and drafting — and that know when to stop and check with you.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">The boring, repeated tasks handled for you, the hours you save actually counted, and a simple off-switch you control.</span></p>
               <div className="flex"><span className="pip"></span><span>Runs on hardware you control — by voice, chat, or API</span></div>
               <div className="stack"><span>Orchestration</span><span>Tool use</span><span>On-device</span><span>RAG</span></div>
             </div>
@@ -772,8 +772,8 @@ export default function Deck() {
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">02</span><span className="tag">Node 02 · Software</span></div>
               <h3 className="display">Web &amp; app development</h3>
-              <p className="line">Software that ships and keeps working — fast, legible, and honest about its state.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">A working product in about ninety days, code documented well enough for the next hands, and an interface that holds up long past launch week.</span></p>
+              <p className="line">We build your website or app — the thing your customers actually see and use — and make sure it is fast, easy to use, and still working long after launch.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">A finished website or app — usually in about three months — that looks right, works on phones, and is built to last, not just to launch.</span></p>
               <div className="stack"><span>TypeScript</span><span>Next.js</span><span>Mobile</span><span>Design systems</span></div>
             </div>
           </div>
@@ -784,8 +784,8 @@ export default function Deck() {
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">03</span><span className="tag">Node 03 · Data engineering</span></div>
               <h3 className="display">Data engineering</h3>
-              <p className="line">Pipelines you can trust with the truth — clean lineage, honest numbers, contracts that hold.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Tested pipelines with traceable lineage, and the retrieval foundation that lets your own data answer questions without leaking.</span></p>
+              <p className="line">We get your scattered information into one tidy, trustworthy place — so the numbers you make decisions on are actually right.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Reports and dashboards you can trust, with the messy data cleaned up and organised behind them — and kept private.</span></p>
               <div className="stack"><span>Pipelines</span><span>Warehouse</span><span>Streaming</span><span>Governance</span></div>
             </div>
           </div>
@@ -796,8 +796,8 @@ export default function Deck() {
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">04</span><span className="tag">Node 04 · Cloud / DevOps</span></div>
               <h3 className="display">Cloud &amp; DevOps</h3>
-              <p className="line">Infrastructure run as a discipline — reproducible, dependable, and sized to what you actually use.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Reproducible environments, calm deploys, and a cloud bill you can read line by line with the waste already cut.</span></p>
+              <p className="line">We set up and look after the place your software lives online — so it stays up, runs fast, and does not hand you a surprise bill.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Your software running reliably online, updates that go out without drama, and a monthly bill you can actually read.</span></p>
               <div className="stack"><span>GCP</span><span>Terraform</span><span>CI·CD</span><span>Observability</span></div>
             </div>
           </div>
@@ -808,8 +808,8 @@ export default function Deck() {
             <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">05</span><span className="tag">Node 05 · Security &amp; reliability</span></div>
               <h3 className="display">Security &amp; reliability</h3>
-              <p className="line">Security built into everything we deliver, not bolted on after — sane data handling and dependable uptime.</p>
-              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Sensible defaults from the first commit, secrets and access handled with care, and uptime you only notice when it is gone. We make what we build safe by default — we do not pose as your security team.</span></p>
+              <p className="line">We keep what we build safe and online — your data protected, your logins locked down, and your site up when customers need it.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Protection built in from day one, your passwords and access handled properly, and backups that are actually tested. We make what we build safe by default — we do not pose as your security team.</span></p>
               <div className="stack"><span>Secure by default</span><span>Secrets &amp; access</span><span>Backups</span><span>Uptime</span></div>
             </div>
           </div>
