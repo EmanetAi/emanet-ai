@@ -234,6 +234,17 @@
   .section-head .idx{ font-family:var(--mono); font-size:11px; letter-spacing:0.30em; color:rgba(216,194,144,0.6); text-transform:uppercase; }
   .section-head h2{ font-family:var(--display); font-weight:330; font-size:clamp(2rem,5vw,4rem); line-height:1.0; letter-spacing:-0.015em; }
   .section-head p{ color:rgba(236,234,224,0.6); max-width:40ch; margin-left:auto; }
+  /* kicker rule: a hairline under the head ties the left heading to the right
+     paragraph (otherwise they float as islands on wide screens) and gives the
+     two stacked text bands a clear edge so they read as separate sections.
+     ponytail: scoped to the two bands that showed the disconnect, not global. */
+  #proof .section-head, #begin .section-head{
+    align-items:flex-end;
+    border-bottom:1px solid rgba(198,168,103,0.16);
+    padding-bottom:clamp(20px,2.4vh,30px);
+    margin-bottom:clamp(38px,5.5vh,64px);
+  }
+  #proof .section-head p, #begin .section-head p{ margin-bottom:2px; }
 
   /* reveal — no permanent will-change: it forced a compositor layer on every reveal
      element for the whole session (heavy on mobile). The transition alone is enough. */
