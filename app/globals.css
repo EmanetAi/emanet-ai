@@ -264,7 +264,9 @@
   .threshold-grid{ display:grid; grid-template-columns:minmax(0,1fr) 30%; gap:48px; align-items:end; }
   .threshold-sub{ color:var(--gold-soft); opacity:.8; margin-bottom:18px; }
   .threshold-h{ font-size:clamp(2.7rem, 8.4vw, 8rem); max-width:14ch; }
-  .threshold-h .ln{ display:block; overflow:hidden; }
+  /* overflow:hidden masks the slide-up reveal; line-height:1.0 leaves no room for
+     descenders (g, y) so they were clipped. pad the box, claw it back with margin. */
+  .threshold-h .ln{ display:block; overflow:hidden; padding-bottom:0.2em; margin-bottom:-0.2em; }
   .threshold-h .w{ display:inline-block; }
   .threshold-thesis{ color:var(--bone); opacity:.66; max-width:40ch; margin-top:30px; font-size:clamp(15px,1.2vw,18px); }
   .threshold-side{ align-self:end; padding-bottom:.8rem; border-left:1px solid rgba(198,168,103,.28); padding-left:22px; }
