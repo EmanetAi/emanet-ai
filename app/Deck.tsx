@@ -945,12 +945,12 @@ export default function Deck() {
           <div className="pgrid">
             <div className="pwrap">
               <p className="p-eyebrow mono reveal"><span className="node-pip"></span>The line we keep</p>
-              <blockquote className="reveal">We keep some trusts by <b>refusing others</b> — no riba, no work that betrays the amanah.</blockquote>
-              <p className="p-note reveal d1">It is a matter of care, not austerity. The same instinct that makes us guard your data makes us decline the work we would not want held against us.</p>
+              <blockquote className="reveal">We take on what we can do <b>honestly and well</b> — and we are straight with you about the rest.</blockquote>
+              <p className="p-note reveal d1">It is a matter of care, not rules. The same instinct that makes us guard your data keeps us honest about the work — and quick to tell you, one to one, if we are not the right hands for it.</p>
             </div>
             <aside className="pmark reveal d1" aria-hidden="true">
               <span className="pmark-ar arabic">أمانة</span>
-              <span className="pmark-gloss mono">amānah — the trust we keep, or decline</span>
+              <span className="pmark-gloss mono">amānah — a trust kept safe, and handed back whole</span>
             </aside>
           </div>
         </section>
