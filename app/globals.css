@@ -456,6 +456,14 @@
   .detail-block .detail-k{ color:rgba(216,194,144,0.6); margin-bottom:12px; }
   .detail-block.detail-price{ border-top-color:rgba(198,168,103,0.32); }
   .detail-block.detail-price .detail-k{ color:var(--gold-soft); }
+  .detail-prices{ margin-top:2px; }
+  .detail-prices .prow{ display:flex; justify-content:space-between; align-items:baseline; gap:18px;
+    padding:11px 0; border-bottom:1px solid rgba(198,168,103,0.10); }
+  .detail-prices .prow:last-child{ border-bottom:0; }
+  .detail-prices .pl{ color:rgba(236,234,224,0.72); font-size:.98rem; }
+  .detail-prices .pa{ font-family:var(--display); color:var(--gold-soft); font-size:1.18rem;
+    letter-spacing:-0.01em; text-align:right; white-space:nowrap; }
+  @media (max-width:520px){ .detail-prices .pa{ font-size:1.02rem; white-space:normal; } }
   .detail-block .detail-p{ color:rgba(236,234,224,0.66); font-size:.98rem; line-height:1.7; max-width:58ch; }
   .detail-block .stack{ display:flex; flex-wrap:wrap; gap:8px; }
   .detail-block .stack span{ font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(236,234,224,0.5); border:1px solid rgba(236,234,224,0.12); padding:5px 10px; border-radius:2px; }
