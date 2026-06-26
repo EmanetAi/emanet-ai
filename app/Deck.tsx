@@ -348,20 +348,26 @@ export default function Deck() {
          ===================================================== */
       function introDraw() {
         if (!GS || REDUCE) return;
-        GS.set('#sealStage .draw', { strokeDasharray: 1, strokeDashoffset: 1 });
-        GS.set('#sealStage .trace', { strokeDasharray: 1, strokeDashoffset: 1 });
+        /* Reveal the seal as ONE GPU-composited layer (opacity + scale on #sealStage),
+           NOT by animating strokeDashoffset per path. A strokeDashoffset tween re-rasters
+           the whole SVG every frame; that's free at DPR 1 (headless looked smooth) but
+           fill-rate murder on a real phone/Retina screen, where raster cost scales with
+           DPR^2 — THIS was the "laggy on everything" open. A transform/opacity reveal is
+           composited, so it's smooth at any DPR (the entry ceremony scales the same way).
+           The figure strokes are shown statically and bloom in with the stage. */
+        GS.set('#sealStage .draw, #sealStage .trace', { strokeDasharray: 'none', strokeDashoffset: 0, opacity: 1 });
         GS.set('#sealStage .node', { opacity: 0, scale: 0, transformOrigin: '50% 50%' });
         GS.set('#sealStage .trace-pad', { opacity: 0, scale: 0, transformOrigin: '50% 50%' });
         GS.set('#sealStage .guides', { opacity: 0 });
+        GS.set('#sealStage', { opacity: 0, scale: 0.9, transformOrigin: '50% 50%', willChange: 'transform, opacity' });
         GS.set('.hero-eyebrow, .hero-arabic, .hero-hint', { opacity: 0, y: 10 });
 
-        var tl = GS.timeline({ delay: 0.35 });
+        var tl = GS.timeline({ delay: 0.3, onComplete: function () { try { GS.set('#sealStage', { clearProps: 'willChange' }); } catch (e) { } } });
         tl.to('.hero-eyebrow', { opacity: .82, y: 0, duration: 1.0, ease: 'power2.out' });
-        tl.to('#sealStage .guides', { opacity: .10, duration: 1.4, ease: 'sine.out' }, '-=0.7');
-        tl.to('#sealStage .draw', { strokeDashoffset: 0, duration: 1.25, stagger: 0.22, ease: 'power2.inOut' }, '-=1.1');
-        tl.to('#sealStage .node', { opacity: 1, scale: 1, duration: 0.5, stagger: 0.06, ease: 'back.out(2)' }, '-=0.5');
-        tl.to('#sealStage .trace', { strokeDashoffset: 0, duration: 0.55, stagger: 0.1, ease: 'power2.out' }, '-=0.5');
-        tl.to('#sealStage .trace-pad', { opacity: 1, scale: 1, duration: 0.4, stagger: 0.1, ease: 'back.out(2)' }, '-=0.4');
+        tl.to('#sealStage', { opacity: 1, scale: 1, duration: 1.4, ease: 'power3.out' }, '-=0.75');
+        tl.to('#sealStage .guides', { opacity: .10, duration: 1.2, ease: 'sine.out' }, '-=1.15');
+        tl.to('#sealStage .node', { opacity: 1, scale: 1, duration: 0.5, stagger: 0.05, ease: 'back.out(2)' }, '-=0.6');
+        tl.to('#sealStage .trace-pad', { opacity: 1, scale: 1, duration: 0.4, stagger: 0.08, ease: 'back.out(2)' }, '-=0.35');
         tl.to('.hero-arabic', { opacity: .62, y: 0, duration: 0.9, ease: 'power2.out' }, '-=0.5');
         tl.to('.hero-hint', { opacity: .34, y: 0, duration: 0.9, ease: 'power2.out' }, '-=0.7');
       }
