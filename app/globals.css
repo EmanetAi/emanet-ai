@@ -405,7 +405,7 @@
   .footrow .sig{ font-family:var(--display); font-style:italic; font-weight:300; font-size:1.2rem; color:rgba(236,234,224,0.8); }
   .footrow .sig .ar{ font-style:normal; font-family:var(--arabic); color:var(--gold-soft); }
   .footrow .legal{ font-family:var(--mono); font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(236,234,224,0.62); }
-  body.powered .footrow .sig .ar{ text-shadow:0 0 22px rgba(198,168,103,0.4); }
+  body.powered .footrow .sig .ar{ text-shadow:0 0 13px rgba(198,168,103,0.26); }
 
   /* ---------- SELECTED WORK (real builds, gold-hairline cards) ---------- */
   #work .work-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:30px 26px; }
