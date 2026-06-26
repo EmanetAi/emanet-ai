@@ -454,6 +454,8 @@
   .detail-line{ color:var(--bone); opacity:.74; font-size:clamp(1rem,1.6vw,1.25rem); line-height:1.5; margin-top:18px; max-width:50ch; }
   .detail-block{ margin-top:30px; padding-top:24px; border-top:1px solid rgba(198,168,103,0.14); }
   .detail-block .detail-k{ color:rgba(216,194,144,0.6); margin-bottom:12px; }
+  .detail-block.detail-price{ border-top-color:rgba(198,168,103,0.32); }
+  .detail-block.detail-price .detail-k{ color:var(--gold-soft); }
   .detail-block .detail-p{ color:rgba(236,234,224,0.66); font-size:.98rem; line-height:1.7; max-width:58ch; }
   .detail-block .stack{ display:flex; flex-wrap:wrap; gap:8px; }
   .detail-block .stack span{ font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(236,234,224,0.5); border:1px solid rgba(236,234,224,0.12); padding:5px 10px; border-radius:2px; }

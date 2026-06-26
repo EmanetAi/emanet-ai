@@ -294,7 +294,11 @@ export default function Deck() {
       function updateThread() {
         if (REDUCE) return;
         if (liveLen <= 0) return;
-        var prog = Math.min(1, Math.max(0, scrollY() / maxScroll()));
+        var raw = Math.min(1, Math.max(0, scrollY() / maxScroll()));
+        /* the gold races ahead of the scroll (×1.7) with a small head-start, so the line
+           is drawn from the very TOP the instant you begin — it used to only catch up by
+           the AI-automation section. token / powerOn / cue still track the REAL scroll. */
+        var prog = Math.min(1, raw * 1.7 + 0.05);
         var drawn = liveLen * prog;
 
         /* draw the live trace from the corner downward */
@@ -305,7 +309,7 @@ export default function Deck() {
         if (token && sampleTable.length) {
           var p = sampleAt(Math.min(drawn, liveLen - 0.5));
           token.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ')');
-          token.setAttribute('opacity', prog > 0.003 ? '1' : '0');
+          token.setAttribute('opacity', raw > 0.004 ? '1' : '0');
         }
 
         /* hand the token to each node as it arrives -> ignite */
@@ -313,11 +317,11 @@ export default function Deck() {
           if (drawn >= anchorLens[i] - 4 && !fired[i]) fireAnchor(i);
         }
 
-        /* the board powers on as the loop closes */
-        if (prog > 0.985) powerOn();
+        /* the board powers on as the loop closes (real scroll, not the boosted draw) */
+        if (raw > 0.97) powerOn();
 
         /* fade the cue once the line is being followed */
-        if (hint) { hint.style.opacity = prog > 0.03 ? '0' : '1'; }
+        if (hint) { hint.style.opacity = raw > 0.03 ? '0' : '1'; }
       }
 
       var ticking = false;
@@ -468,22 +472,27 @@ export default function Deck() {
       var detailExtra: any = {
         '01': {
           approach: 'We start by finding the handful of tasks actually worth automating — the repetitive ones eating your team’s time — not everything we could. Each assistant gets only the access it needs, keeps a record of what it did, and a limit it must respect. Your own documents stay where they are; nothing is copied somewhere you cannot see.',
+          pricing: 'Priced by what it touches — how many tasks and which of your tools. A first working automation starts at €200; the full build is quoted once we see the scope. Running and tending it after: from about €10/month.',
           examples: [{ t: 'Parallel-Claude', id: 'work-parallel-claude' }, { t: 'HyperAgent Relay', id: 'work-hyperagent-relay' }]
         },
         '02': {
           approach: 'We get a small working version in front of you early and grow it in the open, so you are never waiting months for a big reveal. We build it cleanly so the next person can pick it up — not just to scrape by today. And we stay honest about what is done, what is rough, and what is still a guess.',
+          pricing: 'The first simple version is €200, including one round of changes. The full site or app is quoted by how polished you want it and which features you add. Hosting and maintenance after launch: from about €10/month.',
           examples: [{ t: 'MoStay', id: 'work-mostay' }, { t: 'Classroom 2.0', id: 'work-classroom' }]
         },
         '03': {
           approach: 'We treat your numbers like something you will have to stand behind, so they are traceable and tested from the start. The plumbing is built to fail loudly and recover quietly. And the same care keeps your data safe to use without it leaking where it should not.',
+          pricing: 'Priced by how much data and how many sources we tie together — small to start, scoped up as it grows. Ongoing upkeep and monitoring: from about €10/month.',
           examples: [{ t: 'Real-time Serverless Pipeline', id: 'work-pipeline' }, { t: 'Data visualization & research', id: 'work-dataviz' }]
         },
         '04': {
           approach: 'Everything is written down as code, so your setup can be rebuilt instead of living in one person’s head. Updates are meant to be boring — no drama. We size things to what you actually use and read the bill with you, line by line.',
+          pricing: 'Priced by the size of what you run; we read the cloud bill with you so there are no surprises. Ongoing management and monitoring: from about €10/month.',
           examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }, { t: 'Cloud security & IaC labs', id: 'work-iac' }]
         },
         '05': {
           approach: 'We build safety in from the very first day, not as a check we schedule for the end. Passwords and access are handled carefully, backups are tested, and staying online is something you only think about when it is gone. We make what we build safe by default — we are not pretending to be your security team.',
+          pricing: 'Built into whatever we make for you rather than sold as a separate package. Ongoing monitoring and tested backups: from about €10/month.',
           examples: [{ t: 'Cloud security & IaC labs', id: 'work-iac' }]
         }
       };
@@ -507,6 +516,7 @@ export default function Deck() {
           '<h2 class="detail-title display">' + title + '</h2>' +
           '<p class="detail-line">' + line + '</p>' +
           '<div class="detail-block"><p class="detail-k mono">What you get</p><p class="detail-p">' + deliver + '</p></div>' +
+          (ex.pricing ? '<div class="detail-block detail-price"><p class="detail-k mono">What it costs</p><p class="detail-p">' + ex.pricing + '</p></div>' : '') +
           '<div class="detail-block"><p class="detail-k mono">How we approach it</p><p class="detail-p">' + ex.approach + '</p></div>' +
           '<div class="detail-block"><p class="detail-k mono">Stack</p><div class="stack">' + stackHtml + '</div></div>' +
           (exHtml ? '<div class="detail-block"><p class="detail-k mono">Example from our work</p><div class="detail-ex-row">' + exHtml + '</div></div>' : '');
