@@ -171,7 +171,10 @@
     z-index:1; pointer-events:none; overflow:visible;
   }
   #thread-base{ stroke:rgba(198,168,103,0.10); }
-  #thread-live{ stroke:var(--gold); filter:url(#threadGlow); }
+  /* ponytail: no SVG blur filter here. The thread spans the whole page and its
+     dashoffset changes every scroll frame, so a filter re-rasters a full-page blur
+     each tick = the lag. #thread-base (faint gold underlay) gives subtle depth free. */
+  #thread-live{ stroke:var(--gold); }
   .thread-path{ fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
   #token{ pointer-events:none; }
   #token .core{ fill:var(--gold-soft); }
