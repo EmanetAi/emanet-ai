@@ -178,12 +178,14 @@
     position:absolute; top:0; left:0; width:100%;
     z-index:1; pointer-events:none; overflow:visible;
   }
-  #thread-base{ stroke:rgba(198,168,103,0.10); }
-  /* ponytail: no SVG blur filter here. The thread spans the whole page and its
-     dashoffset changes every scroll frame, so a filter re-rasters a full-page blur
-     each tick = the lag. #thread-base (faint gold underlay) gives subtle depth free. */
+  /* base = the WHOLE route, always visible so the line never disappears in the
+     stretches the bright gold hasn't drawn yet (0.10 read as invisible on the dark
+     bg — "can't see the string for a part of the scroll"). No SVG blur filter: it
+     spans the page and the dashoffset changes every scroll frame, so a filter would
+     re-raster a full-page blur each tick = lag. */
+  #thread-base{ stroke:rgba(198,168,103,0.28); }
   #thread-live{ stroke:var(--gold); }
-  .thread-path{ fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+  .thread-path{ fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   #token{ pointer-events:none; }
   /* glow without an SVG filter (filters re-raster per move): a translucent gold fill
      in the halo ring + a bright core reads as a lit token, composited cheaply. */
