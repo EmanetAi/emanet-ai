@@ -88,16 +88,23 @@ export default function Deck() {
       }
 
       /* =====================================================
-         GEOMETRY — a single continuous {8/3} octagram (the
-         Islamic khatam). From 8 equally-spaced vertices we
-         connect every 3rd one in ONE unbroken cycle
-         (0→3→6→1→4→7→2→5→0): exactly 8 sharp points, never a
-         6-point star and never two overlapping shapes.
+         GEOMETRY — an 8-fold khatam rosette in the brand's gold.
+         Layered so it reads rich but stays one clean vector: an
+         outer 8-point star (two overlaid squares = {8/2}), a
+         woven mid-ring (octagon + {8/3} star at 0.72R, secondary
+         tone), a sharp central {8/3} star, 8 radiating circuit
+         spokes with solder pads, and 8 node dots at the outer
+         points — those 8 nodes drive the corner accretion and
+         are where the thread is born, so the count stays at 8.
          ===================================================== */
       var C = 220, R = 150;
       function P(r: number, deg: number) { var a = (deg - 90) * Math.PI / 180; return { x: C + r * Math.cos(a), y: C + r * Math.sin(a) }; }
       function n2(v: number) { return Math.round(v * 100) / 100; }
       function poly(pts: any[]) { return pts.map(function (p: any) { return n2(p.x) + ',' + n2(p.y); }).join(' '); }
+      var STAR83 = [0, 3, 6, 1, 4, 7, 2, 5];   /* {8/3} connection order — sharp 8-point star */
+      function ringPoly(rad: number, offset: number, count: number, order?: any) {
+        var p = []; for (var j = 0; j < count; j++) { var idx = order ? order[j] : j; p.push(P(rad, offset + idx * (360 / count))); } return poly(p);
+      }
 
       function buildSeal(opts?: any) {
         opts = opts || {};
@@ -111,33 +118,34 @@ export default function Deck() {
         if (guides) {
           s += '<g class="guides">';
           s += '<circle cx="' + C + '" cy="' + C + '" r="' + R + '"/>';
-          s += '<circle cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.70) + '"/>';
-          s += '<circle cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.40) + '"/>';
+          s += '<circle cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.72) + '"/>';
+          s += '<circle cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.36) + '"/>';
           for (k = 0; k < 8; k++) { var a = P(R, k * 45), b = P(R, k * 45 + 180); s += '<line x1="' + n2(a.x) + '" y1="' + n2(a.y) + '" x2="' + n2(b.x) + '" y2="' + n2(b.y) + '"/>'; }
-          for (k = 0; k < 8; k++) { var cpt = P(R * 0.70, k * 45); s += '<circle cx="' + n2(cpt.x) + '" cy="' + n2(cpt.y) + '" r="' + n2(R * 0.40) + '"/>'; }
           s += '</g>';
         }
 
-        /* the single {8/3} star (one polygon, one continuous path) */
-        var starOrder = [0, 3, 6, 1, 4, 7, 2, 5];
-        var star = []; for (i = 0; i < 8; i++) { star.push(P(R, starOrder[i] * 45)); }
-        var oct = []; for (i = 0; i < 8; i++) { oct.push(P(R * 0.40, i * 45)); }
-
-        s += '<circle class="draw fig" cx="' + C + '" cy="' + C + '" r="' + R + '" pathLength="1"/>';
-        s += '<polygon class="draw fig" points="' + poly(star) + '" pathLength="1"/>';
-        s += '<polygon class="draw fig faint" points="' + poly(oct) + '" pathLength="1"/>';
+        /* outer 8-point star = two overlaid squares ({8/2}) — the green silhouette */
+        s += '<polygon class="draw fig2" points="' + ringPoly(R, 0, 4) + '" pathLength="1"/>';
+        s += '<polygon class="draw fig2" points="' + ringPoly(R, 45, 4) + '" pathLength="1"/>';
+        /* connecting octagon ring — sits between the two stars, forms the petal cells */
+        s += '<polygon class="draw fig faint" points="' + ringPoly(R * 0.74, 22.5, 8) + '" pathLength="1"/>';
+        /* inner 8-point star (two squares at 0.52R) — the gold weave nested inside */
+        s += '<polygon class="draw fig" points="' + ringPoly(R * 0.52, 0, 4) + '" pathLength="1"/>';
+        s += '<polygon class="draw fig" points="' + ringPoly(R * 0.52, 45, 4) + '" pathLength="1"/>';
+        /* sharp central {8/3} star (green), hollow middle */
+        s += '<polygon class="draw fig2" points="' + ringPoly(R * 0.26, 0, 8, STAR83) + '" pathLength="1"/>';
 
         if (traces) {
           s += '<g class="traces">';
-          [1, 3, 5, 7].forEach(function (kk) {
-            var p = P(R, kk * 45), q = P(R + 46, kk * 45);
+          for (k = 0; k < 8; k++) {
+            var p = P(R, k * 45), q = P(R + 30, k * 45);
             s += '<line class="trace" x1="' + n2(p.x) + '" y1="' + n2(p.y) + '" x2="' + n2(q.x) + '" y2="' + n2(q.y) + '" pathLength="1"/>';
             s += '<circle class="trace-pad" cx="' + n2(q.x) + '" cy="' + n2(q.y) + '" r="4"/>';
-          });
+          }
           s += '</g>';
         }
 
-        /* solder-pad node dots at the 8 vertices */
+        /* solder-pad node dots at the 8 outer points (drive accretion + thread origin) */
         for (i = 0; i < 8; i++) { var pt = P(R, i * 45); s += '<circle class="node" data-i="' + i + '" cx="' + n2(pt.x) + '" cy="' + n2(pt.y) + '" r="5.5"/>'; }
 
         s += '</g></svg>';

@@ -1,6 +1,7 @@
   :root{
     --bone:#ECEAE0; --bone-2:#E0DED2;
     --emerald:#143A28; --ink:#0B130E;
+    --emerald-lit:#5E9B7A;   /* readable emerald for the seal's green strokes on dark */
     --gold:#C6A867; --gold-soft:#D8C290;
 
     --display:"Fraunces", Georgia, serif;
@@ -129,6 +130,7 @@
 
   /* the seal figure (shared geometry classes) */
   .fig{ fill:none; stroke:var(--gold); stroke-width:1.4; vector-effect:non-scaling-stroke; }
+  .fig2{ fill:none; stroke:var(--emerald-lit); stroke-width:1.4; vector-effect:non-scaling-stroke; }
   .fig.faint{ stroke:var(--gold-soft); stroke-width:1; opacity:.45; }
   .guides{ fill:none; stroke:var(--gold); stroke-width:.6; opacity:.10; }
   .guides *{ vector-effect:non-scaling-stroke; }
@@ -139,7 +141,7 @@
      The small static marks (corner trust-mark, keeper avatars) keep non-scaling-stroke
      and stay crisp — only the scaling gate seal changes. ~520px stage ≈ 440 viewBox so
      stroke thickness is essentially unchanged. */
-  #sealStage .fig, #sealStage .fig.faint, #sealStage .guides,
+  #sealStage .fig, #sealStage .fig2, #sealStage .fig.faint, #sealStage .guides,
   #sealStage .guides *, #sealStage .trace{ vector-effect:none; }
   .trace{ fill:none; stroke:var(--gold); stroke-width:1.2; vector-effect:non-scaling-stroke; }
   .trace-pad{ fill:var(--gold); }
@@ -173,7 +175,7 @@
   .trustmark{ position:relative; width:50px; height:50px; }
   /* drawn {8/3} seal — the corner trust-mark */
   .trustmark svg{ display:block; width:100%; height:100%; overflow:visible; }
-  .trustmark .fig{ stroke-width:2.4; opacity:.55; }
+  .trustmark .fig, .trustmark .fig2{ stroke-width:2.4; opacity:.55; }
   .trustmark .fig.faint{ display:none; }
   .trustmark .guides{ display:none; }
   .trustmark .node{ fill:var(--gold); opacity:.16; transition:opacity .7s var(--ease); }
@@ -322,7 +324,7 @@
   .keepers .grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:30px; }
   .keeper .av{ width:84px; height:84px; margin-bottom:22px; opacity:.95; }
   .keeper .av svg{ width:100%; height:100%; overflow:visible; }
-  .keeper .av .fig{ stroke-width:2; opacity:.62; }
+  .keeper .av .fig, .keeper .av .fig2{ stroke-width:2; opacity:.62; }
   .keeper .av .fig.faint{ display:none; }
   .keeper .av .guides{ display:none; }
   .keeper .av .node{ fill:var(--gold); }
