@@ -157,6 +157,7 @@ export default function Deck() {
       var fired: any[] = [];
       var liveLen = 0;
       var anchorLens: any[] = [];
+      var sampleTable: any[] = [];   /* {L,x,y} samples of the live path, reused per frame */
 
       function scrollY() { return window.pageYOffset || document.documentElement.scrollTop || 0; }
       function docHeight() {
@@ -256,23 +257,38 @@ export default function Deck() {
 
         /* map path-length at which the token reaches each waypoint */
         anchorLens = [];
+        sampleTable = [];
         if (liveLen > 0 && live.getPointAtLength) {
-          var samples = 600, table: any[] = [];
+          /* one bounded sampling pass; the table is then reused every scroll frame so
+             updateThread never calls the (synchronous, path-walking) getPointAtLength again. */
+          var samples = Math.max(120, Math.min(360, Math.round(liveLen / 14)));
           for (var s = 0; s <= samples; s++) {
             var L = (s / samples) * liveLen;
             var pp = live.getPointAtLength(L);
-            table.push({ L: L, x: pp.x, y: pp.y });
+            sampleTable.push({ L: L, x: pp.x, y: pp.y });
           }
           pts.slice(1, pts.length - 1).forEach(function (wp: any) {
             var best = 0, bestD = Infinity;
-            for (var t = 0; t < table.length; t++) {
-              var dx = table[t].x - wp.x, dy = table[t].y - wp.y;
+            for (var t = 0; t < sampleTable.length; t++) {
+              var dx = sampleTable[t].x - wp.x, dy = sampleTable[t].y - wp.y;
               var dd = dx * dx + dy * dy;
-              if (dd < bestD) { bestD = dd; best = table[t].L; }
+              if (dd < bestD) { bestD = dd; best = sampleTable[t].L; }
             }
             anchorLens.push(best);
           });
         }
+      }
+
+      /* read a point off the precomputed table (uniform spacing -> direct index + lerp).
+         Replaces a per-frame getPointAtLength, which was the scroll-jank source. */
+      function sampleAt(L: number) {
+        var n = sampleTable.length;
+        if (n === 0 || liveLen <= 0) return { x: 0, y: 0 };
+        if (n === 1) return sampleTable[0];
+        var f = Math.max(0, Math.min(1, L / liveLen)) * (n - 1);
+        var i0 = Math.floor(f), i1 = Math.min(n - 1, i0 + 1), t = f - i0;
+        var a = sampleTable[i0], b = sampleTable[i1];
+        return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
       }
 
       function updateThread() {
@@ -284,9 +300,10 @@ export default function Deck() {
         /* draw the live trace from the corner downward */
         live.style.strokeDashoffset = (liveLen - drawn);
 
-        /* carry the token at the drawn tip */
-        if (token && live.getPointAtLength) {
-          var p = live.getPointAtLength(Math.min(drawn, liveLen - 0.5));
+        /* carry the token at the drawn tip — read the precomputed table, not
+           getPointAtLength (that synchronous path-walk every frame was the jank). */
+        if (token && sampleTable.length) {
+          var p = sampleAt(Math.min(drawn, liveLen - 0.5));
           token.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ',' + p.y.toFixed(1) + ')');
           token.setAttribute('opacity', prog > 0.003 ? '1' : '0');
         }
@@ -359,6 +376,10 @@ export default function Deck() {
       var corner: any = document.getElementById('corner');
 
       function rebuild() {
+        /* the thread is only laid AFTER entry (it's born from the corner mark and hidden
+           behind the gate until then). Guarding here keeps the load/fonts/resize handlers
+           from running the path-sampling pass during the opening = the seal draws clean. */
+        if (!entered) return;
         buildThread();
         updateThread();
         if (ST) { try { ST.refresh(); } catch (e) { } }
@@ -586,14 +607,12 @@ export default function Deck() {
         setupReveals();
         introDraw();
 
-        /* let fonts/layout settle, then lay the thread */
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            buildThread();
-            updateThread();
-            navState();
-          });
-        });
+        /* The thread is born from the corner mark AFTER entry and sits behind the gate
+           until then — so it is NOT built at boot. Building it here ran a path-sampling
+           pass (getTotalLength + ~600 getPointAtLength) that blocked the main thread right
+           as the seal self-draws, which is why the open janked. afterEnter() lays it once
+           the ceremony completes; reduced-motion still routes through buildThread there. */
+        requestAnimationFrame(function () { navState(); });
 
         /* scroll wiring — Lenis if present, else native */
         if (lenis) { lenis.on('scroll', onScrollWin); }
@@ -653,20 +672,12 @@ export default function Deck() {
     <>
       {/* ===== THREAD LAYER (single unbroken gold line, born from the corner trust-mark) ===== */}
       <svg id="thread-layer" aria-hidden="true" preserveAspectRatio="none">
-        <defs>
-          <filter id="threadGlow" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="2.4" result="b" />
-            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="tokenGlow" x="-200%" y="-200%" width="500%" height="500%">
-            <feGaussianBlur stdDeviation="3.6" result="b" />
-            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-        </defs>
+        {/* no SVG blur filters: a filter on the whole-page path / moving token re-rasters
+            every scroll frame = jank. The token glows via its layered halo circle (CSS). */}
         <path id="thread-base" className="thread-path" d="" />
         <path id="thread-live" className="thread-path" d="" />
-        <g id="token" opacity="0" filter="url(#tokenGlow)">
-          <circle className="halo" cx="0" cy="0" r="9" />
+        <g id="token" opacity="0">
+          <circle className="halo" cx="0" cy="0" r="10" />
           <circle className="core" cx="0" cy="0" r="3.4" />
         </g>
       </svg>
@@ -934,6 +945,38 @@ export default function Deck() {
               <p className="pk display">You own the keys.</p>
               <p className="pv">Infrastructure you hold and dependencies you can remove. No lock-in dressed up as a feature.</p>
             </div>
+          </div>
+        </section>
+
+        {/* ENGAGEMENT — how we begin: start small, earn the rest */}
+        <section className="band" id="begin">
+          <i className="anchor a-right" aria-hidden="true"></i>
+          <div className="inner section-head reveal">
+            <span className="idx"><span className="node-pip"></span>How we begin</span>
+            <h2 className="display">Start small.<br />Earn the rest.</h2>
+            <p>Trust is given in steps. We prove the work on something small before you commit to the whole build — no retainer, no lock-in.</p>
+          </div>
+          <div className="inner begin-grid">
+            <div className="bcard reveal d1">
+              <p className="bstep mono">Step one · The first cut</p>
+              <p className="bname display">A simple site, built for real</p>
+              <p className="bprice display">€200<small> fixed · one review cycle</small></p>
+              <p className="bdesc">We build the first version of a simple website — designed, coded, and live — then take it through one round of your feedback. You hold finished work in your hands before deciding on anything larger.</p>
+              <p className="bnote mono">Live site · one revision · yours to keep</p>
+            </div>
+            <div className="bcard reveal d2">
+              <p className="bstep mono">Step two · The full build</p>
+              <p className="bname display">Scoped together, once trust is earned</p>
+              <p className="bprice display">Quoted plainly<small> after the first cut</small></p>
+              <p className="bdesc">When the first cut has earned it, we scope the rest with you — the full site or product, priced line by line. You own the code and the keys; we hand it back whole.</p>
+              <p className="bnote mono">You own everything we build</p>
+            </div>
+          </div>
+          <div className="inner begin-cta reveal d1">
+            <a className="cta" href="mailto:salam@emanet.ai?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
+              <span className="ar arabic">أمانة</span>
+              <span>Begin with the first cut</span>
+            </a>
           </div>
         </section>
 
