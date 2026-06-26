@@ -5,6 +5,7 @@
 import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Flip } from 'gsap/Flip';
 import Lenis from 'lenis';
 
 export default function Deck() {
@@ -420,6 +421,156 @@ export default function Deck() {
         }
       }
 
+      /* =====================================================
+         SERVICE DETAIL — each service card zooms into a
+         fullscreen panel via GSAP Flip (shared-element expand).
+         Scroll + Lenis are paused while a panel is open.
+         ===================================================== */
+      var FL: any = Flip;
+      if (GS && FL) { try { GS.registerPlugin(FL); } catch (e) { FL = null; } }
+
+      var overlay: any = document.getElementById('detailOverlay');
+      var panel: any = document.getElementById('detailPanel');
+      var pbody: any = document.getElementById('detailBody');
+      var pclose: any = document.getElementById('detailClose');
+      var pback: any = document.getElementById('detailBackdrop');
+      var currentCard: any = null;
+      var detailOpen = false;
+      var detailAnimating = false;
+
+      var detailExtra: any = {
+        '01': {
+          approach: 'We start by finding the few tasks worth automating, not every task we could. Each agent gets the narrowest tools that do the job, a written record of what it did, and a stop it must respect. Your own documents stay where they are — retrieval reads them without copying them somewhere you cannot see.',
+          examples: [{ t: 'Parallel-Claude', id: 'work-parallel-claude' }, { t: 'HyperAgent Relay', id: 'work-hyperagent-relay' }]
+        },
+        '02': {
+          approach: 'We ship a small working slice early and grow it in the open, so you are never waiting on a reveal. The code is written to be read by the next person, not just to pass today. We stay honest about what is done, what is rough, and what is still a guess.',
+          examples: [{ t: 'MoStay', id: 'work-mostay' }, { t: 'Classroom 2.0', id: 'work-classroom' }]
+        },
+        '03': {
+          approach: 'We treat the numbers as something we will be asked to defend, so lineage and tests come first, not last. Pipelines are built to fail loudly and recover quietly. The same care makes your data safe to query without it leaking where it should not.',
+          examples: [{ t: 'Real-time Serverless Pipeline', id: 'work-pipeline' }, { t: 'Data visualization & research', id: 'work-dataviz' }]
+        },
+        '04': {
+          approach: 'Everything that runs is described in code, so an environment can be rebuilt rather than remembered. Deploys are meant to be dull. We size infrastructure to real usage and read the bill with you, line by line.',
+          examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }, { t: 'Cloud security & IaC labs', id: 'work-iac' }]
+        },
+        '05': {
+          approach: 'Security is a default we set on the first commit, not a review we schedule for the end. Secrets and access are handled with care, backups are tested, and uptime is something you only notice when it is gone. We make what we build safe by default — we do not pose as your security team.',
+          examples: [{ t: 'Cloud security & IaC labs', id: 'work-iac' }]
+        }
+      };
+
+      function dtxt(el: any, sel: string) { var n = el.querySelector(sel); return n ? n.innerHTML : ''; }
+
+      function populateDetail(card: any) {
+        if (!pbody) return;
+        var numEl = card.querySelector('.num');
+        var num = (numEl ? numEl.textContent : '').trim();
+        var tag = dtxt(card, '.tag');
+        var title = dtxt(card, 'h3');
+        var line = dtxt(card, 'p.line');
+        var deliver = dtxt(card, '.deliver .dv');
+        var stackHtml = '';
+        Array.prototype.forEach.call(card.querySelectorAll('.stack span'), function (s: any) { stackHtml += '<span>' + s.innerHTML + '</span>'; });
+        var ex = detailExtra[num] || { approach: '', examples: [] };
+        var exHtml = (ex.examples || []).map(function (e: any) { return '<a class="detail-ex" href="#' + e.id + '">' + e.t + '</a>'; }).join('');
+        pbody.innerHTML =
+          '<p class="detail-tag mono">' + tag + '</p>' +
+          '<h2 class="detail-title display">' + title + '</h2>' +
+          '<p class="detail-line">' + line + '</p>' +
+          '<div class="detail-block"><p class="detail-k mono">What you get</p><p class="detail-p">' + deliver + '</p></div>' +
+          '<div class="detail-block"><p class="detail-k mono">How we approach it</p><p class="detail-p">' + ex.approach + '</p></div>' +
+          '<div class="detail-block"><p class="detail-k mono">Stack</p><div class="stack">' + stackHtml + '</div></div>' +
+          (exHtml ? '<div class="detail-block"><p class="detail-k mono">Example from our work</p><div class="detail-ex-row">' + exHtml + '</div></div>' : '');
+        Array.prototype.forEach.call(pbody.querySelectorAll('.detail-ex'), function (a: any) {
+          a.addEventListener('click', function (ev: Event) {
+            ev.preventDefault();
+            var id = a.getAttribute('href');
+            var target = id ? document.querySelector(id) : null;
+            closeDetail(function () {
+              if (!target) return;
+              if (lenis) { try { lenis.scrollTo(target, { offset: -60 }); } catch (e) { } }
+              else { try { target.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth' }); } catch (e) { } }
+            });
+          });
+        });
+      }
+
+      function lockScroll() {
+        if (lenis) { try { lenis.stop(); } catch (e) { } }
+        document.documentElement.classList.add('detail-locked');
+      }
+      function unlockScroll() {
+        document.documentElement.classList.remove('detail-locked');
+        if (lenis && entered) { try { lenis.start(); } catch (e) { } }
+      }
+
+      function openDetail(card: any) {
+        if (!overlay || !panel || detailOpen || detailAnimating) return;
+        currentCard = card;
+        populateDetail(card);
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.classList.add('open');
+        if (pbody) pbody.scrollTop = 0;
+        detailOpen = true;
+        lockScroll();
+        if (REDUCE || !GS || !FL) { if (pclose) { try { pclose.focus(); } catch (e) { } } return; }
+        detailAnimating = true;
+        if (pback) GS.fromTo(pback, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: 'sine.out' });
+        try {
+          /* snap the panel onto the card, record it, release to fullscreen, then grow */
+          FL.fit(panel, card, { scale: false });
+          var state = FL.getState(panel);
+          GS.set(panel, { clearProps: 'all' });
+          FL.from(state, {
+            duration: 0.7, ease: 'power3.inOut', absolute: true,
+            onComplete: function () { detailAnimating = false; if (pclose) { try { pclose.focus(); } catch (e) { } } }
+          });
+        } catch (e) {
+          detailAnimating = false;
+          try { GS.set(panel, { clearProps: 'all' }); } catch (e2) { }
+        }
+      }
+
+      function closeDetail(after?: any) {
+        if (!overlay || !detailOpen) { if (typeof after === 'function') after(); return; }
+        if (detailAnimating) return;
+        var done = function () {
+          overlay.classList.remove('open');
+          overlay.setAttribute('aria-hidden', 'true');
+          if (panel && GS) { try { GS.set(panel, { clearProps: 'all' }); } catch (e) { } }
+          detailOpen = false;
+          detailAnimating = false;
+          unlockScroll();
+          /* return focus to the card, but not when a follow-up scroll is queued
+             (refocusing would scroll the card back into view and fight it) */
+          if (currentCard && typeof after !== 'function') { try { currentCard.focus(); } catch (e) { } }
+          if (typeof after === 'function') after();
+        };
+        if (REDUCE || !GS || !FL || !currentCard) { done(); return; }
+        detailAnimating = true;
+        if (pback) GS.to(pback, { opacity: 0, duration: 0.45, ease: 'sine.out' });
+        try {
+          var state = FL.getState(panel);
+          FL.fit(panel, currentCard, { scale: false });
+          FL.from(state, { duration: 0.6, ease: 'power3.inOut', absolute: true, onComplete: done });
+        } catch (e) { done(); }
+      }
+
+      if (overlay) {
+        Array.prototype.forEach.call(document.querySelectorAll('#practice .scene-card'), function (card: any) {
+          card.addEventListener('click', function () { openDetail(card); });
+          card.addEventListener('keydown', function (e: any) {
+            if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') { e.preventDefault(); openDetail(card); }
+          });
+        });
+        if (pclose) pclose.addEventListener('click', function () { closeDetail(); });
+        if (pback) pback.addEventListener('click', function () { closeDetail(); });
+      }
+      function onDetailKey(e: any) { if (e.key === 'Escape' && detailOpen) { e.preventDefault(); closeDetail(); } }
+      document.addEventListener('keydown', onDetailKey);
+
       /* ---------- nav solidify ---------- */
       var topbar = document.getElementById('topbar');
       function navState() { if (!topbar) return; if (scrollY() > 40) topbar.classList.add('solid'); else topbar.classList.remove('solid'); }
@@ -478,6 +629,8 @@ export default function Deck() {
         window.removeEventListener('scroll', onScrollWin);
         window.removeEventListener('resize', onResize);
         window.removeEventListener('load', rebuild);
+        document.removeEventListener('keydown', onDetailKey);
+        try { document.documentElement.classList.remove('detail-locked'); } catch (e) { }
         try { if (ST && ST.getAll) { ST.getAll().forEach(function (t: any) { t.kill(); }); } } catch (e) { }
         try { if (lenis) lenis.destroy(); } catch (e) { }
       };
@@ -586,56 +739,61 @@ export default function Deck() {
           {/* NODE 01 */}
           <div className="scene right" id="node-1">
             <i className="anchor a-left" data-anchor="2" data-beat="" aria-hidden="true"></i>
-            <div className="scene-card reveal">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">01</span><span className="tag">Node 01 · Automation</span></div>
+            <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
+              <div className="nlabel"><span className="node-pip"></span><span className="num">01</span><span className="tag">Node 01 · AI automation</span></div>
               <h3 className="display">AI automation &amp; agents</h3>
-              <p>Agents that do real work on your machines, on your terms — and that know when to ask. We treat autonomy as something earned and supervised, never a black box you cannot turn off.</p>
-              <div className="flex"><span className="pip"></span><span>Flagship · “Jarvis”, a local voice agent</span></div>
-              <div className="stack"><span>Orchestration</span><span>Tool use</span><span>On-device</span><span>Private by default</span></div>
+              <p className="line">Agents that do real work across your systems and your own documents — and know when to stop and ask.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Shipped automations with the hours saved measured, secure retrieval that lets your own data answer questions, and a kill switch you hold.</span></p>
+              <div className="flex"><span className="pip"></span><span>Runs on hardware you control — by voice, chat, or API</span></div>
+              <div className="stack"><span>Orchestration</span><span>Tool use</span><span>On-device</span><span>RAG</span></div>
             </div>
           </div>
 
           {/* NODE 02 */}
           <div className="scene left" id="node-2">
             <i className="anchor a-right" data-anchor="3" data-beat="" aria-hidden="true"></i>
-            <div className="scene-card reveal">
+            <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">02</span><span className="tag">Node 02 · Software</span></div>
               <h3 className="display">Web &amp; app development</h3>
-              <p>Interfaces with the manners of good craft — fast, legible, and honest about state. Built to last past launch week, and to be maintained by whoever inherits them next.</p>
-              <div className="stack"><span>TypeScript</span><span>Rust</span><span>Edge</span><span>Design systems</span></div>
+              <p className="line">Software that ships and keeps working — fast, legible, and honest about its state.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">A working product in about ninety days, code documented well enough for the next hands, and an interface that holds up long past launch week.</span></p>
+              <div className="stack"><span>TypeScript</span><span>Next.js</span><span>Mobile</span><span>Design systems</span></div>
             </div>
           </div>
 
           {/* NODE 03 */}
           <div className="scene right" id="node-3">
             <i className="anchor a-left" data-anchor="4" data-beat="" aria-hidden="true"></i>
-            <div className="scene-card reveal">
+            <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">03</span><span className="tag">Node 03 · Data engineering</span></div>
               <h3 className="display">Data engineering</h3>
-              <p>Pipelines you can trust with the truth — clean lineage, honest numbers, contracts that hold. The plumbing nobody notices until it leaks, and we don&apos;t let it leak.</p>
-              <div className="stack"><span>Lakehouse</span><span>dbt</span><span>Streaming</span><span>Governance</span></div>
+              <p className="line">Pipelines you can trust with the truth — clean lineage, honest numbers, contracts that hold.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Tested pipelines with traceable lineage, and the retrieval foundation that lets your own data answer questions without leaking.</span></p>
+              <div className="stack"><span>Pipelines</span><span>Warehouse</span><span>Streaming</span><span>Governance</span></div>
             </div>
           </div>
 
           {/* NODE 04 */}
           <div className="scene left" id="node-4">
             <i className="anchor a-right" data-anchor="5" data-beat="" aria-hidden="true"></i>
-            <div className="scene-card reveal">
+            <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
               <div className="nlabel"><span className="node-pip"></span><span className="num">04</span><span className="tag">Node 04 · Cloud / DevOps</span></div>
               <h3 className="display">Cloud &amp; DevOps</h3>
-              <p>Infrastructure as a discipline, not a dashboard. Reproducible environments, sane deploys, and the kind of quiet reliability you only notice when it is missing.</p>
-              <div className="stack"><span>Kubernetes</span><span>Terraform</span><span>Observability</span></div>
+              <p className="line">Infrastructure run as a discipline — reproducible, dependable, and sized to what you actually use.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Reproducible environments, calm deploys, and a cloud bill you can read line by line with the waste already cut.</span></p>
+              <div className="stack"><span>GCP</span><span>Terraform</span><span>CI·CD</span><span>Observability</span></div>
             </div>
           </div>
 
           {/* NODE 05 */}
           <div className="scene right" id="node-5">
             <i className="anchor a-left" data-anchor="6" data-beat="" aria-hidden="true"></i>
-            <div className="scene-card reveal">
-              <div className="nlabel"><span className="node-pip"></span><span className="num">05</span><span className="tag">Node 05 · Systems &amp; Performance</span></div>
-              <h3 className="display">Systems &amp; performance</h3>
-              <p>Down where every cycle is accounted for — profiling, low-level work, and the unglamorous tuning that makes everything above it feel effortless. The closest the line comes to the metal.</p>
-              <div className="stack"><span>Low-level</span><span>Profiling</span><span>Optimization</span><span>Reliability</span></div>
+            <div className="scene-card reveal" role="button" tabIndex={0} aria-haspopup="dialog">
+              <div className="nlabel"><span className="node-pip"></span><span className="num">05</span><span className="tag">Node 05 · Security &amp; reliability</span></div>
+              <h3 className="display">Security &amp; reliability</h3>
+              <p className="line">Security built into everything we deliver, not bolted on after — sane data handling and dependable uptime.</p>
+              <p className="deliver"><span className="dk mono">What you get</span><span className="dv">Sensible defaults from the first commit, secrets and access handled with care, and uptime you only notice when it is gone. We make what we build safe by default — we do not pose as your security team.</span></p>
+              <div className="stack"><span>Secure by default</span><span>Secrets &amp; access</span><span>Backups</span><span>Uptime</span></div>
             </div>
           </div>
         </section>
@@ -646,7 +804,7 @@ export default function Deck() {
           <div className="inner section-head reveal">
             <span className="idx"><span className="node-pip"></span>The Keepers</span>
             <h2 className="display">Four hands<br />on the same line.</h2>
-            <p>A small studio on purpose. Each keeper signs their own node — and answers for it.</p>
+            <p>A small studio on purpose. Each keeper signs their own node. One named engineer owns your work end to end and answers for it directly — no handoff to people you never met.</p>
           </div>
           <div className="inner grid" id="keeper-grid">
             <div className="keeper reveal d1">
@@ -659,7 +817,7 @@ export default function Deck() {
               <div className="av" data-rot="22.5"></div>
               <h4>Tarik Topalović</h4>
               <p className="role">AI Automation Engineer</p>
-              <p className="bio">Designs agents that act with restraint. Building Jarvis, a local voice agent.</p>
+              <p className="bio">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
             </div>
             <div className="keeper reveal d3">
               <div className="av" data-rot="33.75"></div>
@@ -673,6 +831,66 @@ export default function Deck() {
               <p className="role">Full-Stack Engineer</p>
               <p className="bio">From schema to screen — the whole stack, held together.</p>
             </div>
+          </div>
+        </section>
+
+        {/* SELECTED WORK — real builds, no client logos */}
+        <section className="band work" id="work">
+          <i className="anchor a-right" data-anchor="8" aria-hidden="true"></i>
+          <div className="inner section-head reveal">
+            <span className="idx"><span className="node-pip"></span>Selected work</span>
+            <h2 className="display">Things we have<br />actually shipped.</h2>
+            <p>Real builds from the team — not client logos, not case-study theatre. The work, named plainly.</p>
+          </div>
+          <div className="inner work-grid">
+            <article className="wcard reveal d1" id="work-parallel-claude">
+              <p className="wk-who mono">Tarik</p>
+              <h3 className="wk-title display">Parallel-Claude</h3>
+              <p className="wk-line">Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.</p>
+              <div className="stack"><span>Python</span><span>Multi-agent</span><span>CLI</span></div>
+            </article>
+            <article className="wcard reveal d2" id="work-hyperagent-relay">
+              <p className="wk-who mono">Tarik</p>
+              <h3 className="wk-title display">HyperAgent Relay</h3>
+              <p className="wk-line">Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.</p>
+              <div className="stack"><span>Python</span><span>Webhooks</span></div>
+            </article>
+            <article className="wcard reveal d3" id="work-mostay">
+              <p className="wk-who mono">Tarik</p>
+              <h3 className="wk-title display">MoStay</h3>
+              <p className="wk-line">Website for a boutique hotel in Mostar — fast static Next.js.</p>
+              <div className="stack"><span>Next.js</span><span>Static</span></div>
+            </article>
+            <article className="wcard reveal d1" id="work-cloud-ops">
+              <p className="wk-who mono">Eman</p>
+              <h3 className="wk-title display">Intelligent Cloud-Ops Agent</h3>
+              <p className="wk-line">A LangChain agent that operates and reasons over Google Cloud infrastructure.</p>
+              <div className="stack"><span>LangChain</span><span>GCP</span><span>Python</span></div>
+            </article>
+            <article className="wcard reveal d2" id="work-pipeline">
+              <p className="wk-who mono">Eman</p>
+              <h3 className="wk-title display">Real-time Serverless Pipeline</h3>
+              <p className="wk-line">A streaming, serverless data pipeline on Google Cloud.</p>
+              <div className="stack"><span>GCP</span><span>Streaming</span><span>Serverless</span></div>
+            </article>
+            <article className="wcard reveal d3" id="work-classroom">
+              <p className="wk-who mono">Eman</p>
+              <h3 className="wk-title display">Classroom 2.0</h3>
+              <p className="wk-line">Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.</p>
+              <div className="stack"><span>Kotlin</span><span>Compose</span><span>Firebase</span></div>
+            </article>
+            <article className="wcard reveal d1" id="work-iac">
+              <p className="wk-who mono">Eman</p>
+              <h3 className="wk-title display">Cloud security &amp; IaC labs</h3>
+              <p className="wk-line">Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.</p>
+              <div className="stack"><span>Terraform</span><span>GCP</span><span>Security</span></div>
+            </article>
+            <article className="wcard reveal d2" id="work-dataviz">
+              <p className="wk-who mono">Ajdin</p>
+              <h3 className="wk-title display">Data visualization &amp; research</h3>
+              <p className="wk-line">Exploratory data analysis and visualization in Python, including a Spotify dataset study.</p>
+              <div className="stack"><span>Python</span><span>Pandas</span><span>Notebooks</span></div>
+            </article>
           </div>
         </section>
 
@@ -696,7 +914,7 @@ export default function Deck() {
         <section className="band" id="proof">
           <i className="anchor a-right" data-anchor="9" aria-hidden="true"></i>
           <div className="inner section-head reveal">
-            <span className="idx">Quietly, for years</span>
+            <span className="idx">What we hold to</span>
             <h2 className="display">We&apos;d rather show<br />than tell.</h2>
             <p>No vanity metrics. The proof is in what we are willing to refuse, and what we are willing to be held to.</p>
           </div>
@@ -704,7 +922,7 @@ export default function Deck() {
             <div className="pcard reveal d1">
               <p className="pt mono">Local-first</p>
               <p className="pk display">Yours to unplug.</p>
-              <p className="pv">Jarvis runs on your own machine. Nothing leaves it that you didn&apos;t send — no cloud you can&apos;t switch off.</p>
+              <p className="pv">What we build runs on machines you control. Nothing leaves them that you did not send, and no cloud you cannot switch off.</p>
             </div>
             <div className="pcard reveal d2">
               <p className="pt mono">Read the source</p>
@@ -739,6 +957,15 @@ export default function Deck() {
         </footer>
 
       </div>{/* /shell */}
+
+      {/* ===== SERVICE DETAIL OVERLAY (a card zooms into this fullscreen panel) ===== */}
+      <div className="detail-overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Service detail" aria-hidden="true">
+        <div className="detail-backdrop" id="detailBackdrop"></div>
+        <div className="detail-panel" id="detailPanel">
+          <button className="detail-close" id="detailClose" type="button" aria-label="Close detail"><span aria-hidden="true">&times;</span></button>
+          <div className="detail-body" id="detailBody"></div>
+        </div>
+      </div>
     </>
   );
 }
