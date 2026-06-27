@@ -305,6 +305,12 @@ export default function Deck() {
           startY = lr.top + lr.height / 2 + window.pageYOffset;
         } else { startX = 70; startY = 80 + window.pageYOffset; }
 
+        /* mobile: the serpentine collapses to a vertical line; the corner node sits
+           ~38px in, right over the text. Pin the origin + loop-close to the same thin
+           rail the anchors use (8px from the leading edge) so the thread stays in the
+           margin, not through the copy. dir-aware so RTL rails on the right. */
+        if (W <= 900) { startX = (document.documentElement.getAttribute('dir') === 'rtl') ? (W - 8) : 8; }
+
         var pts: any[] = [{ x: startX, y: startY }];
         anchors.forEach(function (a: any) { pts.push(centerOf(a)); });
         var last = pts[pts.length - 1];
