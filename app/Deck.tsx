@@ -869,10 +869,10 @@ export default function Deck() {
                   <span className="ln"><span className="w">technology</span></span>
                   <span className="ln"><span className="w">in</span> <span className="w">trust.</span></span>
                 </h1>
-                <p className="threshold-thesis reveal" data-i18n="th.thesis">Amanah (<span className="arabic" lang="ar">أمانة</span>) is a trust placed in your keeping, to be returned whole. We build software the same way — what you hand us, we look after, and hand back intact.</p>
+                <p className="threshold-thesis reveal" data-i18n="th.thesis"><b>Stop shipping broken AI features.</b> We build rock-solid agents and seamless integrations you can actually trust in production.</p>
               </div>
               <div className="threshold-side reveal">
-                <p data-i18n="th.side">An engineering studio kept like a workshop, not a shop floor. The code, the systems, and the quiet between releases.</p>
+                <p data-i18n="th.side">Amanah (<span className="arabic" lang="ar">أمانة</span>) is a trust placed in your keeping, to be returned whole. We build software the same way — what you hand us, we look after, and hand back intact.</p>
               </div>
             </div>
           </div>

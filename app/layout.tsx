@@ -68,7 +68,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="" />
         <link rel="dns-prefetch" href="//api.fontshare.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Spline+Sans+Mono:wght@300..600&family=Amiri:wght@400&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Spline+Sans+Mono:wght@300..600&family=Amiri:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
         <link

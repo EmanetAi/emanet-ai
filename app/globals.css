@@ -3,6 +3,7 @@
     --emerald:#143A28; --ink:#0B130E;
     --emerald-lit:#5E9B7A;   /* readable emerald for the seal's green strokes on dark */
     --gold:#C6A867; --gold-soft:#D8C290;
+    --arabic-ui:"IBM Plex Sans Arabic", "Noto Sans Arabic", sans-serif;  /* legible Arabic UI face (Amiri kept only for decorative أمانة marks) */
 
     --display:"Fraunces", Georgia, serif;
     --body:"Switzer", "Helvetica Neue", Arial, sans-serif;
@@ -270,7 +271,8 @@
      descenders (g, y) so they were clipped. pad the box, claw it back with margin. */
   .threshold-h .ln{ display:block; overflow:hidden; padding-bottom:0.2em; margin-bottom:-0.2em; }
   .threshold-h .w{ display:inline-block; }
-  .threshold-thesis{ color:var(--bone); opacity:.66; max-width:40ch; margin-top:30px; font-size:clamp(15px,1.2vw,18px); }
+  .threshold-thesis{ color:var(--bone); opacity:.82; max-width:42ch; margin-top:26px; font-size:clamp(16px,1.4vw,20px); line-height:1.5; }
+  .threshold-thesis b{ color:var(--gold-soft); font-weight:500; }
   .threshold-side{ align-self:end; padding-bottom:.8rem; border-inline-start:1px solid rgba(198,168,103,.28); padding-inline-start:22px; }
   .threshold-side p{ color:var(--bone); opacity:.62; font-size:.96rem; line-height:1.7; max-width:30ch; }
 
@@ -562,17 +564,17 @@
      real Arabic face (Amiri, already loaded), drop letter-spacing + transform, and give
      the headline extra line-height/descender room for diacritics. Latin tokens embedded
      in the copy (email, product names, €200) render acceptably in Amiri. */
-  [dir="rtl"] body{ font-family:var(--arabic); letter-spacing:0; }
+  [dir="rtl"] body{ font-family:var(--arabic-ui); letter-spacing:0; }
   [dir="rtl"] .display,
   [dir="rtl"] .section-head h2,
   [dir="rtl"] .foot h2,
   [dir="rtl"] #principle blockquote,
-  [dir="rtl"] .threshold-h{ font-family:var(--arabic); letter-spacing:0; line-height:1.35; }
+  [dir="rtl"] .threshold-h{ font-family:var(--arabic-ui); letter-spacing:0; line-height:1.4; font-weight:500; }
   [dir="rtl"] .mono,
-  [dir="rtl"] .langset .lang{ font-family:var(--arabic); letter-spacing:0; text-transform:none; font-size:13px; }
-  [dir="rtl"] .threshold-h{ font-size:clamp(2.3rem,6.8vw,6.2rem); line-height:1.28; max-width:none; }
-  [dir="rtl"] .threshold-h .ln{ padding-bottom:0.34em; margin-bottom:-0.34em; }
-  [dir="rtl"] #principle blockquote{ font-style:normal; line-height:1.4; }
+  [dir="rtl"] .langset .lang{ font-family:var(--arabic-ui); letter-spacing:0; text-transform:none; font-size:12.5px; }
+  [dir="rtl"] .threshold-h{ font-size:clamp(2.3rem,6.8vw,6rem); line-height:1.32; max-width:none; font-weight:600; }
+  [dir="rtl"] .threshold-h .ln{ padding-bottom:0.16em; margin-bottom:-0.16em; }
+  [dir="rtl"] #principle blockquote{ font-style:normal; line-height:1.55; font-weight:500; }
   [dir="rtl"] .footrow .sig{ font-style:normal; }
   [dir="rtl"] .scene-card::after{ content:"افتح ↖"; }
   html[lang="bs"] .scene-card::after{ content:"Otvori ↗"; }
