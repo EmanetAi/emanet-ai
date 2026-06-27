@@ -1153,7 +1153,7 @@ export default function Deck() {
         <div className="detail-backdrop" id="detailBackdrop"></div>
         <div className="detail-panel" id="detailPanel">
           <button className="detail-close" id="detailClose" type="button" aria-label="Close detail"><span aria-hidden="true">&#x2715;</span></button>
-          <div className="detail-body" id="detailBody"></div>
+          <div className="detail-body" id="detailBody" data-lenis-prevent></div>
         </div>
       </div>
     </>
