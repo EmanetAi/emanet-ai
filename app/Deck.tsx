@@ -186,7 +186,7 @@ export default function Deck() {
           s += '<circle class="fig faint" cx="' + C + '" cy="' + C + '" r="' + R + '"/>';
           s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.66) + '"/>';
           s += '<circle class="fig" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.35) + '"/>';
-          s += '<polygon class="fig" points="' + ringPoly(R * 0.2, 0, 8, STAR83) + '"/>';
+          s += '<circle class="node" cx="' + C + '" cy="' + C + '" r="6"/>';
           for (i = 0; i < 8; i++) { p = P(R, i * 45); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="4"/>'; }
           for (i = 0; i < 4; i++) { p = P(R * 0.66, 45 + i * 90); s += '<circle class="fig2" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="10"/>'; }
         } else if (kind === 2) {   /* frames — telescoping screens */
