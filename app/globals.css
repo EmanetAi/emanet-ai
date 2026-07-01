@@ -348,20 +348,13 @@
   .scene .deliver .dv{ color:rgba(236,234,224,0.6); }
 
   /* ---------- each service card is clickable -> opens a detail panel ----------
-     the card must LOOK like an object you can press: a bordered panel with a
-     real button inside, not a bare text block with a whispered "Open". */
-  .scene-card{
-    position:relative; cursor:pointer; outline:none;
-    border:1px solid rgba(198,168,103,0.2); border-radius:4px;
-    padding:clamp(24px,3vw,36px) clamp(22px,2.6vw,34px);
-    background:linear-gradient(180deg, rgba(20,58,40,0.16), rgba(20,58,40,0.02));
-    transition:border-color .5s var(--ease), transform .5s var(--ease), box-shadow .5s var(--ease);
-  }
-  .scene-card:hover, .scene-card:focus-visible{
-    border-color:rgba(198,168,103,0.55); transform:translateY(-3px);
-    box-shadow:0 18px 50px rgba(0,0,0,0.35);
-  }
-  .scene-card:focus-visible{ outline:1px solid rgba(198,168,103,0.55); outline-offset:4px; }
+     open editorial block (side hairline), NOT a boxed panel — the affordance
+     is the real button below, which matches the footer CTA's vocabulary. */
+  .scene-card{ position:relative; cursor:pointer; padding-inline-start:20px; border-inline-start:1px solid rgba(198,168,103,0.16);
+    transition:border-color .5s var(--ease); outline:none; }
+  .scene.left .scene-card{ padding-inline-start:0; padding-inline-end:20px; border-inline-start:0; border-inline-end:1px solid rgba(198,168,103,0.16); }
+  .scene-card:hover, .scene-card:focus-visible{ border-color:rgba(198,168,103,0.55); }
+  .scene-card:focus-visible{ outline:1px solid rgba(198,168,103,0.55); outline-offset:14px; }
   .scene-card::after{ content:"Details & pricing ↗"; display:inline-block; margin-top:24px;
     /* localized variants below via [lang] */
     font-family:var(--mono); font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
@@ -583,6 +576,7 @@
     .section-head{ gap:14px; }
     .scene{ grid-template-columns:1fr; min-height:auto; padding:50px var(--gut); }
     .scene-card, .scene.right .scene-card, .scene.left .scene-card{ grid-column:1 / -1; }
+    .scene.left .scene-card{ padding-inline-start:20px; padding-inline-end:0; border-inline-start:1px solid rgba(198,168,103,0.16); border-inline-end:0; }
     /* collapse the serpentine to a thin rail at the far edge so the thread never
        runs through the text (content sits at the gut, ~20px; rail at 8px clears it) */
     .anchor.a-left, .anchor.a-right{ inset-inline-start:8px; inset-inline-end:auto; top:24px; }
