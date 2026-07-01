@@ -152,6 +152,57 @@ export default function Deck() {
         return s;
       }
 
+      /* =====================================================
+         EMBLEMS — five sibling figures in the seal's vocabulary,
+         one per discipline. They fill the empty half of each
+         serpentine scene and double as the keepers' marks.
+         1 orbits (AI) · 2 frames (web) · 3 lattice (data) ·
+         4 compass (cloud) · 5 ward (security)
+         ===================================================== */
+      var STAR125 = [0, 5, 10, 3, 8, 1, 6, 11, 4, 9, 2, 7];   /* {12/5} single-cycle order */
+      function buildEmblem(kind: number) {
+        var s = '<svg viewBox="0 0 ' + (2 * C) + ' ' + (2 * C) + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">';
+        var i, p;
+        if (kind === 1) {          /* orbits — agents circling a kept center */
+          s += '<circle class="fig faint" cx="' + C + '" cy="' + C + '" r="' + R + '"/>';
+          s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.66) + '"/>';
+          s += '<circle class="fig" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.35) + '"/>';
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.2, 0, 8, STAR83) + '"/>';
+          for (i = 0; i < 8; i++) { p = P(R, i * 45); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="4"/>'; }
+          for (i = 0; i < 4; i++) { p = P(R * 0.66, 45 + i * 90); s += '<circle class="fig2" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="10"/>'; }
+        } else if (kind === 2) {   /* frames — telescoping screens */
+          s += '<polygon class="fig2" points="' + ringPoly(R, 0, 4) + '"/>';
+          s += '<polygon class="fig faint" points="' + ringPoly(R * 0.8, 45, 4) + '"/>';
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.62, 0, 4) + '"/>';
+          s += '<polygon class="fig2 faint" points="' + ringPoly(R * 0.46, 45, 4) + '"/>';
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.3, 0, 4) + '"/>';
+          for (i = 0; i < 4; i++) { p = P(R, i * 90); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="4"/>'; }
+        } else if (kind === 3) {   /* lattice — twelve sources, one weave */
+          s += '<polygon class="fig faint" points="' + ringPoly(R, 15, 12) + '"/>';
+          s += '<polygon class="fig2" points="' + ringPoly(R * 0.82, 15, 12, STAR125) + '"/>';
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.38, 0, 6) + '"/>';
+          for (i = 0; i < 12; i++) { p = P(R, 15 + i * 30); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="3.4"/>'; }
+        } else if (kind === 4) {   /* compass — spokes reaching out, pads at the ends */
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.85, 22.5, 8) + '"/>';
+          s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.55) + '"/>';
+          s += '<polygon class="fig2" points="' + ringPoly(R * 0.22, 0, 8, STAR83) + '"/>';
+          for (i = 0; i < 8; i++) {
+            var a = P(R * 0.32, i * 45), b = P(R + 18, i * 45);
+            s += '<line class="fig faint" x1="' + n2(a.x) + '" y1="' + n2(a.y) + '" x2="' + n2(b.x) + '" y2="' + n2(b.y) + '"/>';
+            s += '<circle class="node" cx="' + n2(b.x) + '" cy="' + n2(b.y) + '" r="4"/>';
+          }
+        } else {                   /* ward — rings of the vault, closed around the star */
+          s += '<polygon class="fig2" points="' + ringPoly(R, 22.5, 8) + '"/>';
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.8, 0, 8) + '"/>';
+          s += '<polygon class="fig2 faint" points="' + ringPoly(R * 0.62, 22.5, 8) + '"/>';
+          s += '<polygon class="fig" points="' + ringPoly(R * 0.45, 0, 8) + '"/>';
+          s += '<polygon class="fig2" points="' + ringPoly(R * 0.28, 0, 8, STAR83) + '"/>';
+          for (i = 0; i < 8; i++) { p = P(R, 22.5 + i * 45); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="4"/>'; }
+        }
+        s += '</svg>';
+        return s;
+      }
+
       /* ---------- inject the geometry ---------- */
       var heroSeal = buildSeal({ guides: true, traces: true });
       var wl: any = document.getElementById('wrapL'), wr: any = document.getElementById('wrapR');
@@ -164,9 +215,19 @@ export default function Deck() {
       var fm: any = document.getElementById('footerMark');
       if (fm) fm.innerHTML = buildSeal({ guides: false, traces: false, rot: 22.5 });
 
-      Array.prototype.forEach.call(document.querySelectorAll('.keeper .av'), function (av: any) {
-        var rot = parseFloat(av.getAttribute('data-rot')) || 0;
-        av.innerHTML = buildSeal({ guides: false, traces: false, rot: rot });
+      /* keepers get role-matched emblems: data→lattice, AI→orbits, devops→compass, full-stack→frames */
+      var KEEPER_EMBLEMS = [3, 1, 4, 2];
+      Array.prototype.forEach.call(document.querySelectorAll('.keeper .av'), function (av: any, i: number) {
+        av.innerHTML = buildEmblem(KEEPER_EMBLEMS[i] || 1);
+      });
+
+      /* each scene's empty half carries its discipline's emblem, faint under the thread */
+      Array.prototype.forEach.call(document.querySelectorAll('#practice .scene'), function (sc: any, i: number) {
+        var em = document.createElement('div');
+        em.className = 'scene-emblem' + (i % 2 ? ' ccw' : '');
+        em.setAttribute('aria-hidden', 'true');
+        em.innerHTML = buildEmblem(i + 1);
+        sc.appendChild(em);
       });
 
       /* =====================================================
@@ -873,7 +934,7 @@ export default function Deck() {
                 <h1 className="display threshold-h" data-i18n="th.h">
                   <span className="ln"><span className="w">We</span> <span className="w">hold</span> <span className="w">your</span></span>
                   <span className="ln"><span className="w">technology</span></span>
-                  <span className="ln"><span className="w">in</span> <span className="w">trust.</span></span>
+                  <span className="ln"><span className="w">in</span> <span className="w w-gold">trust.</span></span>
                 </h1>
                 <p className="threshold-thesis reveal" data-i18n="th.thesis"><b>Stop shipping broken AI features.</b> We build rock-solid agents and seamless integrations you can actually trust in production.</p>
               </div>
@@ -965,25 +1026,25 @@ export default function Deck() {
           </div>
           <div className="inner grid" id="keeper-grid">
             <div className="keeper reveal d1">
-              <div className="av" data-rot="0"></div>
+              <div className="av"></div>
               <h3 className="kname">Ajdin Salihović</h3>
               <p className="role" data-i18n="role.data">Data Engineer</p>
               <p className="bio" data-i18n="bio.ajdin">Builds the pipelines and contracts the rest of us stand on.</p>
             </div>
             <div className="keeper reveal d2">
-              <div className="av" data-rot="22.5"></div>
+              <div className="av"></div>
               <h3 className="kname">Tarik Topalović</h3>
               <p className="role" data-i18n="role.ai">AI Automation Engineer</p>
               <p className="bio" data-i18n="bio.tarik">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
             </div>
             <div className="keeper reveal d3">
-              <div className="av" data-rot="33.75"></div>
+              <div className="av"></div>
               <h3 className="kname">Eman Čičkušić</h3>
               <p className="role" data-i18n="role.devops">DevOps Engineer</p>
               <p className="bio" data-i18n="bio.eman">Keeps the deploys boring and the lights on.</p>
             </div>
             <div className="keeper reveal d1">
-              <div className="av" data-rot="11.25"></div>
+              <div className="av"></div>
               <h3 className="kname">Aner Atović</h3>
               <p className="role" data-i18n="role.fullstack">Full-Stack Engineer</p>
               <p className="bio" data-i18n="bio.aner">From schema to screen — the whole stack, held together.</p>

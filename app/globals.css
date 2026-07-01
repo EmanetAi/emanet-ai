@@ -37,6 +37,17 @@
     min-height:100vh;
   }
 
+  /* film grain over everything — one static tiled texture on a fixed layer.
+     Rendered once, composited for free; kills the flat "digital void" read of
+     the large dark stretches. Plain alpha (no blend mode: full-screen blending
+     re-composits per frame on weak GPUs). */
+  body::after{
+    content:""; position:fixed; inset:0; z-index:600; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size:180px 180px;
+    opacity:.05;
+  }
+
   ::selection{ background:rgba(198,168,103,0.28); color:var(--bone); }
   a{ color:inherit; text-decoration:none; }
 
@@ -305,6 +316,27 @@
   .scene .stack{ margin-top:22px; display:flex; flex-wrap:wrap; gap:8px; }
   .scene .stack span{ font-family:var(--mono); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(236,234,224,0.5); border:1px solid rgba(236,234,224,0.12); padding:5px 10px; border-radius:2px; }
 
+  /* ---------- scene emblems (the discipline's figure fills the empty half) ---------- */
+  .scene-emblem{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:clamp(300px, 36vw, 560px); aspect-ratio:1/1;
+    pointer-events:none; z-index:0;
+    opacity:0; transition:opacity 2.2s var(--ease);
+  }
+  .scene.arrived .scene-emblem{ opacity:.3; }
+  .scene.right .scene-emblem{ inset-inline-start:var(--gut); }
+  .scene.left .scene-emblem{ inset-inline-end:var(--gut); }
+  .scene-emblem svg{ display:block; width:100%; height:100%; transform-origin:50% 50%; }
+  /* rotation + non-scaling-stroke = re-raster every frame; vector-effect:none keeps
+     the spin a pure composited transform (same trap as the gate seal's scale) */
+  .scene-emblem .fig, .scene-emblem .fig2, .scene-emblem .fig.faint{ vector-effect:none; }
+  @media (prefers-reduced-motion: no-preference){
+    .scene-emblem svg{ animation:emblem-spin 240s linear infinite; will-change:transform; }
+    .scene-emblem.ccw svg{ animation-direction:reverse; }
+    @keyframes emblem-spin{ to{ transform:rotate(360deg); } }
+  }
+  @media (max-width:900px){ .scene-emblem{ display:none; } }
+
   /* the subtle "what you get" line under each service node */
   .scene .deliver{ margin-top:16px; color:rgba(236,234,224,0.5); font-size:.92rem; line-height:1.6; max-width:42ch; }
   .scene .deliver .dk{ display:block; font-size:10px; letter-spacing:0.24em; color:rgba(216,194,144,0.72); margin-bottom:5px; }
@@ -418,9 +450,10 @@
   #work .work-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:30px 26px; }
   #work .wcard{
     position:relative; border-top:1px solid rgba(198,168,103,0.18); padding-top:20px;
-    scroll-margin-top:90px; transition:border-color .5s var(--ease);
+    scroll-margin-top:90px; transition:border-color .5s var(--ease), transform .55s var(--ease);
   }
-  #work .wcard:hover{ border-color:rgba(198,168,103,0.55); }
+  #work .wcard:hover{ border-color:rgba(198,168,103,0.55); transform:translateY(-4px); }
+  #work .wcard:hover .wk-title{ color:var(--gold-soft); }
   #work .wcard:target{ border-color:var(--gold); }
   #work .wcard:target .wk-title{ color:var(--gold-soft); }
   #work .wk-who{ font-family:var(--mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(216,194,144,0.6); margin-bottom:12px; }
@@ -589,3 +622,13 @@
   ::-webkit-scrollbar-thumb{ background:rgba(198,168,103,0.26); border-radius:5px; }
   ::-webkit-scrollbar-thumb:hover{ background:rgba(198,168,103,0.42); }
   ::-webkit-scrollbar-track{ background:transparent; }
+
+  /* ---------- gilded emphasis (the one luxe moment per section) ----------
+     last in the file so it wins the earlier color declarations on em/b. */
+  @supports ((-webkit-background-clip:text) or (background-clip:text)){
+    .w-gold, .foot h2 em, #principle blockquote b{
+      background:linear-gradient(100deg, #B99753 0%, #EBDCAE 46%, var(--gold) 78%, var(--gold-soft) 100%);
+      -webkit-background-clip:text; background-clip:text;
+      color:transparent; -webkit-text-fill-color:transparent;
+    }
+  }
