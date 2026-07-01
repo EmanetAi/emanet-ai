@@ -7,6 +7,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
 import Lenis from 'lenis';
+import { track } from '@vercel/analytics';
 import { dict } from './dict';
 
 export default function Deck() {
@@ -35,11 +36,23 @@ export default function Deck() {
         'dl.stack': 'Stack', 'dl.example': 'Example from our work',
         'aria.gate': 'Press the seal to be entrusted', 'aria.close': 'Close detail',
         'ft.copy': 'Copy', 'ft.copied': 'Copied ✓',
+        'mail.sub.first': 'The first cut — €200',
+        'mail.sub.main': 'A trust to place with you',
+        'mail.body': 'What we do:\n\nWhat we need first:\n\nRough timing:\n',
       };
+      /* one quiet telemetry wrapper — never let analytics break the page */
+      function beat(name: string, data?: any) { try { track(name, data); } catch (e) { } }
       var LOCS = ['en', 'bs', 'ar'];
       var curLoc = 'en';
       function T(k: string) {
-        if (curLoc !== 'en') { var d: any = (dict as any)[curLoc]; if (d && d.t && d.t[k] != null) return d.t[k]; }
+        if (curLoc !== 'en') {
+          var d: any = (dict as any)[curLoc];
+          if (d && d.t && d.t[k] != null) return d.t[k];
+          /* aria strings live in their own record (unprefixed keys) — without
+             this fallback the translated labels were dead data and AT users
+             always got English */
+          if (d && d.aria && k.indexOf('aria.') === 0 && d.aria[k.slice(5)] != null) return d.aria[k.slice(5)];
+        }
         return EN_JS[k];
       }
       function captureOriginals() {
@@ -61,6 +74,12 @@ export default function Deck() {
         html.setAttribute('dir', loc === 'ar' ? 'rtl' : 'ltr');
         var g: any = document.getElementById('gate'); if (g) g.setAttribute('aria-label', T('aria.gate'));
         var c: any = document.getElementById('detailClose'); if (c) c.setAttribute('aria-label', T('aria.close'));
+        /* localized subject + a 3-line body template — a blank compose window is
+           where mailto conversions die */
+        Array.prototype.forEach.call(document.querySelectorAll('a.cta[data-mail]'), function (a: any) {
+          var sub = T(a.getAttribute('data-mail') === 'first' ? 'mail.sub.first' : 'mail.sub.main');
+          a.setAttribute('href', 'mailto:salam@emanet.ai?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(T('mail.body')));
+        });
         Array.prototype.forEach.call(document.querySelectorAll('.langset .lang'), function (b: any) {
           b.classList.toggle('on', b.getAttribute('data-lang') === loc);
         });
@@ -532,7 +551,7 @@ export default function Deck() {
         GS.set('#sealStage .trace-pad', { opacity: 0, scale: 0, transformOrigin: '50% 50%' });
         GS.set('#sealStage .guides', { opacity: 0 });
         GS.set('#sealStage', { opacity: 0, scale: 0.9, transformOrigin: '50% 50%', willChange: 'transform, opacity' });
-        GS.set('.hero-eyebrow, .hero-arabic, .hero-hint', { opacity: 0, y: 10 });
+        GS.set('.hero-eyebrow, .hero-arabic, .hero-hint, .hero-pitch', { opacity: 0, y: 10 });
 
         var tl = GS.timeline({ delay: 0.3, onComplete: function () { try { GS.set('#sealStage', { clearProps: 'willChange' }); } catch (e) { } } });
         tl.to('.hero-eyebrow', { opacity: .82, y: 0, duration: 1.0, ease: 'power2.out' });
@@ -542,6 +561,7 @@ export default function Deck() {
         tl.to('#sealStage .trace-pad', { opacity: 1, scale: 1, duration: 0.4, stagger: 0.08, ease: 'back.out(2)' }, '-=0.35');
         tl.to('.hero-arabic', { opacity: .62, y: 0, duration: 0.9, ease: 'power2.out' }, '-=0.5');
         tl.to('.hero-hint', { opacity: .34, y: 0, duration: 0.9, ease: 'power2.out' }, '-=0.7');
+        tl.to('.hero-pitch', { opacity: .6, y: 0, duration: 0.9, ease: 'power2.out' }, '-=0.75');
       }
 
       /* =====================================================
@@ -579,7 +599,10 @@ export default function Deck() {
 
         var gate: any = document.getElementById('gate');
 
+        beat('gate_enter');
+
         if (GS && !REDUCE) {
+          try { GS.killTweensOf('#sealStage'); } catch (e) { }   /* clear any live press tween */
           var tl = GS.timeline({ onComplete: afterEnter });
           /* 1. precise 22.5° rotation */
           tl.to('#sealStage .svg-wrap', { rotation: 22.5, duration: 0.95, ease: 'power3.inOut', transformOrigin: '50% 50%' });
@@ -611,6 +634,10 @@ export default function Deck() {
          full-screen gate that ignores scrolling reads as a broken page, so the
          instinctive wheel-spin / swipe / keypress opens it too. */
       function gateAdvance() { if (!entered) enter(); }
+      function onGateKey(e: any) {
+        if (entered) return;
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); enter(); }
+      }
       window.addEventListener('wheel', gateAdvance, { passive: true });
       window.addEventListener('touchmove', gateAdvance, { passive: true });
       var gateEl = document.getElementById('gate');
@@ -619,8 +646,19 @@ export default function Deck() {
         gateEl.addEventListener('keydown', function (e) {
           if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') { e.preventDefault(); enter(); }
         });
-        /* focus the gate so Enter/Space work without a tab-hunt */
-        try { gateEl.focus({ preventScroll: true }); } catch (e) { }
+        /* keys open the gate without focusing it (autofocus painted a permanent
+           :focus-visible ring around the first screen) */
+        window.addEventListener('keydown', onGateKey);
+        /* tactile press: the seal gives slightly under the pointer before opening */
+        if (GS && !REDUCE) {
+          var pressDown = function () { if (!entered) GS.to('#sealStage', { scale: 0.965, duration: 0.18, ease: 'power2.out' }); };
+          var pressUp = function () { if (!entered) GS.to('#sealStage', { scale: 1, duration: 0.35, ease: 'power2.out' }); };
+          gateEl.addEventListener('mousedown', pressDown);
+          gateEl.addEventListener('touchstart', pressDown, { passive: true });
+          gateEl.addEventListener('mouseup', pressUp);
+          gateEl.addEventListener('mouseleave', pressUp);
+          gateEl.addEventListener('touchend', pressUp);
+        }
         if (!REDUCE && window.matchMedia && window.matchMedia('(pointer:fine)').matches && cursor) {
           gateEl.addEventListener('mousemove', function (e) {
             cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
@@ -689,7 +727,10 @@ export default function Deck() {
         Array.prototype.forEach.call(card.querySelectorAll('.stack span'), function (s: any) { stackHtml += '<span>' + s.innerHTML + '</span>'; });
         var ex = detailFor(num) || { approach: '', examples: [] };
         var exHtml = (ex.examples || []).map(function (e: any) { return '<a class="detail-ex" href="#' + e.id + '">' + e.t + '</a>'; }).join('');
+        beat('detail_open', { node: num });
         pbody.innerHTML =
+          /* the discipline's emblem watermarks its own deed */
+          '<div class="detail-mark" aria-hidden="true">' + buildEmblem(parseInt(num, 10) || 1) + '</div>' +
           '<p class="detail-tag mono">' + tag + '</p>' +
           '<h2 class="detail-title display" id="detailTitle">' + title + '</h2>' +
           '<p class="detail-line">' + line + '</p>' +
@@ -805,18 +846,39 @@ export default function Deck() {
       document.addEventListener('keydown', onDetailKey);
 
       /* ---------- copy email (mailto silently fails on machines with no mail
-         client configured — the click "does nothing" and reads as broken) ---------- */
-      var copyBtn: any = document.getElementById('copyEmail');
-      var copyTimer: any = null;
-      if (copyBtn) {
+         client configured — the click "does nothing" and reads as broken).
+         Class-based: one button beside each CTA. ---------- */
+      var copyTimers: any[] = [];
+      Array.prototype.forEach.call(document.querySelectorAll('.copy-email'), function (copyBtn: any, ci: number) {
         copyBtn.addEventListener('click', function () {
           var done = function () {
             copyBtn.innerHTML = T('ft.copied');
             copyBtn.classList.add('did');
-            clearTimeout(copyTimer);
-            copyTimer = setTimeout(function () { copyBtn.innerHTML = T('ft.copy'); copyBtn.classList.remove('did'); }, 1800);
+            clearTimeout(copyTimers[ci]);
+            copyTimers[ci] = setTimeout(function () { copyBtn.innerHTML = T('ft.copy'); copyBtn.classList.remove('did'); }, 1800);
           };
+          beat('copy_email');
           try { navigator.clipboard.writeText('salam@emanet.ai').then(done, function () { }); } catch (e) { }
+        });
+      });
+
+      /* ---------- CTA click telemetry + magnetic pull (pointer:fine only) ---------- */
+      Array.prototype.forEach.call(document.querySelectorAll('a.cta[data-mail]'), function (a: any) {
+        a.addEventListener('click', function () { beat('cta_click', { which: a.getAttribute('data-mail') }); });
+      });
+      if (!REDUCE && window.matchMedia && window.matchMedia('(pointer:fine)').matches) {
+        Array.prototype.forEach.call(document.querySelectorAll('a.cta'), function (el: any) {
+          el.classList.add('magnet');
+          el.addEventListener('mousemove', function (e: any) {
+            var r = el.getBoundingClientRect();
+            var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+            el.style.transition = 'none';
+            el.style.transform = 'translate(' + (dx * 0.12).toFixed(1) + 'px,' + (dy * 0.22).toFixed(1) + 'px)';
+          });
+          el.addEventListener('mouseleave', function () {
+            el.style.transition = 'transform .4s cubic-bezier(.16,.84,.34,1)';
+            el.style.transform = '';
+          });
         });
       }
 
@@ -888,12 +950,13 @@ export default function Deck() {
         destroyed = true;
         if (rafId) cancelAnimationFrame(rafId);
         clearTimeout(resizeTimer);
-        clearTimeout(copyTimer);
+        copyTimers.forEach(function (t: any) { clearTimeout(t); });
         window.removeEventListener('scroll', onScrollWin);
         window.removeEventListener('resize', onResize);
         window.removeEventListener('load', rebuild);
         window.removeEventListener('wheel', gateAdvance);
         window.removeEventListener('touchmove', gateAdvance);
+        window.removeEventListener('keydown', onGateKey);
         document.removeEventListener('keydown', onDetailKey);
         try { document.documentElement.classList.remove('detail-locked'); } catch (e) { }
         try { if (ST && ST.getAll) { ST.getAll().forEach(function (t: any) { t.kill(); }); } } catch (e) { }
@@ -948,11 +1011,13 @@ export default function Deck() {
           </div>
           <p className="hero-arabic arabic" lang="ar">أمانة</p>
           <p className="hero-hint mono" data-i18n="gate.hint">press the seal — or just scroll</p>
+          <p className="hero-pitch mono" data-i18n="gate.pitch">A four-person studio — AI automation, apps &amp; websites, data. First build €200.</p>
         </div>
         <div className="cursor mono" id="cursor"><span data-i18n="gate.cursor">press to be entrusted</span></div>
       </div>
 
       {/* ===== INTERIOR (the journey the thread routes through) ===== */}
+      <a className="skip-link mono" href="#threshold">Skip to content</a>
       <div className="shell">
 
         <header className="topbar" id="topbar">
@@ -1124,6 +1189,12 @@ export default function Deck() {
               <p className="wk-line" data-i18n="wl.mostay">Website for a boutique hotel in Mostar — fast static Next.js.</p>
               <div className="stack"><span>Next.js</span><span>Static</span></div>
             </article>
+            <article className="wcard reveal d1" id="work-servisturbina">
+              <p className="wk-who mono">Tarik</p>
+              <h3 className="wk-title display"><a className="wk-link" href="https://servisturbina.ba" target="_blank" rel="noopener noreferrer">Servis Turbina ↗</a></h3>
+              <p className="wk-line" data-i18n="wl.servis">Website, gallery and admin panel for a turbine-repair service — live in production.</p>
+              <div className="stack"><span>Live</span><span>Admin</span><span>PHP</span></div>
+            </article>
             <article className="wcard reveal d1" id="work-cloud-ops">
               <p className="wk-who mono">Eman</p>
               <h3 className="wk-title display">Intelligent Cloud-Ops Agent</h3>
@@ -1225,11 +1296,44 @@ export default function Deck() {
             </div>
           </div>
           <div className="inner begin-cta reveal d1">
-            <a className="cta" href="mailto:salam@emanet.ai?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
+            <a className="cta" data-mail="first" href="mailto:salam@emanet.ai?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
               <span className="ar arabic" aria-hidden="true">أمانة</span>
               <span data-i18n="bg.cta">Begin with the first cut</span>
             </a>
+            <p className="cta-fallback"><span data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></span> <button className="copy-email mono" type="button" data-i18n="ft.copy">Copy</button></p>
             <p className="cta-assure mono" data-i18n="bg.assure">First reply within a day — no obligation.</p>
+          </div>
+        </section>
+
+        {/* FAQ — the fears, answered plainly (native disclosure, hairline style) */}
+        <section className="band" id="faq">
+          <i className="anchor a-left" aria-hidden="true"></i>
+          <div className="inner section-head reveal">
+            <span className="idx"><span className="node-pip"></span><span data-i18n="faq.idx">Questions</span></span>
+            <h2 className="display" data-i18n="faq.h">Asked plainly,<br />answered plainly.</h2>
+            <p data-i18n="faq.p">The things people actually want to know before they write.</p>
+          </div>
+          <div className="inner faq-list">
+            <details className="faq-item reveal">
+              <summary><span className="faq-q display" data-i18n="faq.q1">Who owns the code?</span><span className="faq-x" aria-hidden="true">+</span></summary>
+              <p className="faq-a" data-i18n="faq.a1">You do — from the first commit. Repositories, keys and accounts are set up in your name and handed back whole. If we ever part ways, everything keeps working without us.</p>
+            </details>
+            <details className="faq-item reveal">
+              <summary><span className="faq-q display" data-i18n="faq.q2">What if I don&apos;t like the first cut?</span><span className="faq-x" aria-hidden="true">+</span></summary>
+              <p className="faq-a" data-i18n="faq.a2">You tell us, plainly. The €200 covers one honest attempt and one round of your feedback — if it still is not right, you keep what was built and owe nothing more. There is no retainer and nothing renews.</p>
+            </details>
+            <details className="faq-item reveal">
+              <summary><span className="faq-q display" data-i18n="faq.q3">How do we communicate?</span><span className="faq-x" aria-hidden="true">+</span></summary>
+              <p className="faq-a" data-i18n="faq.a3">Directly with the engineer doing your work — email, WhatsApp/Viber or a call. No account managers, no ticket queue. You hear from us when something ships, and before anything risky.</p>
+            </details>
+            <details className="faq-item reveal">
+              <summary><span className="faq-q display" data-i18n="faq.q4">What does upkeep cost?</span><span className="faq-x" aria-hidden="true">+</span></summary>
+              <p className="faq-a" data-i18n="faq.a4">From €10 a month, stated before you commit. It covers hosting, updates and backups — and it is cancellable any month, because the keys are yours.</p>
+            </details>
+            <details className="faq-item reveal">
+              <summary><span className="faq-q display" data-i18n="faq.q5">Do you only work with businesses in Bosnia?</span><span className="faq-x" aria-hidden="true">+</span></summary>
+              <p className="faq-a" data-i18n="faq.a5">No — we work remotely in English, Bosnian and Arabic. Most of our work ships across borders; our clock is Central European.</p>
+            </details>
           </div>
         </section>
 
@@ -1240,11 +1344,11 @@ export default function Deck() {
           <div className="inner">
             <div className="pretitle mono reveal" data-i18n="ft.pretitle">The line returns · <span className="arabic" lang="ar">أمانة</span></div>
             <h2 className="display reveal" data-i18n="ft.h">Place a trust<br />in <em>steady hands.</em></h2>
-            <a className="cta reveal d1" href="mailto:salam@emanet.ai">
+            <a className="cta reveal d1" data-mail="main" href="mailto:salam@emanet.ai">
               <span className="ar" aria-hidden="true">أمانة</span>
               <span data-i18n="ft.cta">Place your trust</span>
             </a>
-            <p className="cta-fallback reveal d1"><span data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></span> <button className="copy-email mono" id="copyEmail" type="button" data-i18n="ft.copy">Copy</button></p>
+            <p className="cta-fallback reveal d1"><span data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></span> <button className="copy-email mono" type="button" data-i18n="ft.copy">Copy</button></p>
             <p className="cta-assure mono reveal d2" data-i18n="ft.assure">We reply within a day · no obligation · conversations stay private</p>
 
             <div className="footrow">

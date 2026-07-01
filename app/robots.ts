@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
+import { SITE } from "./site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: "https://emanet-ai.vercel.app/sitemap.xml",
+    sitemap: SITE + "/sitemap.xml",
   };
 }

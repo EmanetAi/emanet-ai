@@ -116,6 +116,8 @@
     color:var(--bone); opacity:.62; margin-top:34px; letter-spacing:.02em;
   }
   .hero-hint{ margin-top:14px; color:var(--gold-soft); opacity:.62; font-size:10px; letter-spacing:.34em; }
+  /* the 5-second answer: what is sold, by whom, from how much */
+  .hero-pitch{ margin-top:30px; color:rgba(236,234,224,0.6); font-size:11px; letter-spacing:.2em; text-align:center; max-width:64ch; padding:0 20px; }
   /* touch devices have no custom-cursor hint, so the seal needs a clear tap affordance */
   @media (pointer:coarse){ .hero-hint{ opacity:.82; font-size:12px; letter-spacing:.2em; } }
 
@@ -216,6 +218,15 @@
      in the halo ring + a bright core reads as a lit token, composited cheaply. */
   #token .core{ fill:var(--gold-soft); }
   #token .halo{ fill:rgba(198,168,103,0.24); stroke:var(--gold); stroke-width:1.4; opacity:0.85; }
+
+  /* ---------- skip link (keyboard/AT) ---------- */
+  .skip-link{
+    position:fixed; top:-60px; inset-inline-start:16px; z-index:1000;
+    background:var(--ink); color:var(--gold-soft);
+    border:1px solid rgba(198,168,103,0.5); border-radius:2px;
+    padding:12px 18px; transition:top .3s ease;
+  }
+  .skip-link:focus{ top:16px; outline:none; }
 
   /* ---------- topbar ---------- */
   .topbar{
@@ -339,6 +350,19 @@
     .scene-emblem svg{ animation:emblem-spin 240s linear infinite; will-change:transform; }
     .scene-emblem.ccw svg{ animation-direction:reverse; }
     @keyframes emblem-spin{ to{ transform:rotate(360deg); } }
+    /* scroll-driven drift (zero JS, progressive enhancement) — the figures rise
+       gently as their scene passes through the viewport */
+    @supports (animation-timeline: view()){
+      .scene-emblem{
+        animation:emblem-drift linear both;
+        animation-timeline:view();
+        animation-range:entry 0% exit 100%;
+      }
+      @keyframes emblem-drift{
+        from{ transform:translateY(calc(-50% + 46px)); }
+        to{ transform:translateY(calc(-50% - 46px)); }
+      }
+    }
   }
   @media (max-width:900px){ .scene-emblem{ display:none; } }
 
@@ -367,14 +391,33 @@
   /* ---------- KEEPERS ---------- */
   .keepers .grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:30px; }
   .keeper .av{ width:84px; height:84px; margin-bottom:22px; opacity:.95; }
-  .keeper .av svg{ width:100%; height:100%; overflow:visible; }
-  .keeper .av .fig, .keeper .av .fig2{ stroke-width:2; opacity:.62; }
+  .keeper .av svg{ width:100%; height:100%; overflow:visible; transform-origin:50% 50%; transition:transform .7s var(--ease); }
+  .keeper:hover .av svg{ transform:rotate(22.5deg); }
+  .keeper .av .fig, .keeper .av .fig2{ stroke-width:2; opacity:.62; transition:opacity .5s var(--ease); }
+  .keeper:hover .av .fig, .keeper:hover .av .fig2{ opacity:1; }
   .keeper .av .fig.faint{ display:none; }
   .keeper .av .guides{ display:none; }
   .keeper .av .node{ fill:var(--gold); }
   .keeper h3, .keeper .kname{ font-family:var(--display); font-weight:380; font-size:1.18rem; letter-spacing:-0.01em; }
   .keeper .role{ font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(216,194,144,0.62); margin-top:6px; }
   .keeper .bio{ color:rgba(236,234,224,0.55); font-size:14.5px; margin-top:14px; max-width:30ch; }
+
+  /* ---------- FAQ (native disclosure, hairline rows — no boxes) ---------- */
+  #faq .faq-list{ max-width:820px; }
+  .faq-item{ border-top:1px solid rgba(198,168,103,0.16); }
+  .faq-item:last-child{ border-bottom:1px solid rgba(198,168,103,0.16); }
+  .faq-item summary{
+    list-style:none; cursor:pointer;
+    display:flex; align-items:baseline; justify-content:space-between; gap:20px;
+    padding:22px 0;
+  }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-q{ font-weight:340; font-size:clamp(1.15rem,2vw,1.5rem); letter-spacing:-0.01em; transition:color .4s var(--ease); }
+  .faq-item summary:hover .faq-q, .faq-item[open] .faq-q{ color:var(--gold-soft); }
+  .faq-item summary:focus-visible{ outline:1px solid rgba(198,168,103,0.55); outline-offset:4px; }
+  .faq-x{ font-family:var(--mono); font-size:16px; color:rgba(216,194,144,0.6); transition:transform .4s var(--ease); }
+  .faq-item[open] .faq-x{ transform:rotate(45deg); }
+  .faq-a{ color:rgba(236,234,224,0.62); max-width:58ch; padding:0 0 26px; line-height:1.7; }
 
   /* ---------- PRINCIPLE (the one emerald breath — translucent, thread reads through) ---------- */
   #principle{ position:relative; padding:clamp(90px,16vh,200px) var(--gut); }
@@ -441,6 +484,10 @@
     transition:transform .5s var(--ease), border-color .4s ease, background .4s ease, color .4s ease, box-shadow .5s ease;
   }
   .cta:hover{ border-color:var(--gold); background:rgba(198,168,103,0.08); color:var(--bone); transform:translateY(-2px); box-shadow:0 14px 40px rgba(198,168,103,0.12); }
+  /* magnetic CTAs: JS drives transform directly; drop the CSS transform
+     transition + hover-lift so they don't fight the pointer tracking */
+  .cta.magnet{ transition:border-color .4s ease, background .4s ease, color .4s ease, box-shadow .5s ease; }
+  .cta.magnet:hover{ transform:none; }
   .cta .ar{ font-family:var(--arabic); font-size:18px; line-height:1; color:var(--gold-soft); }
   /* the quiet reassurance under a CTA — answers "what happens if I write?" */
   .cta-assure{ margin-top:16px; font-size:10px; letter-spacing:.22em; color:rgba(216,194,144,0.55); }
@@ -482,6 +529,10 @@
   #work .wcard:target .wk-title{ color:var(--gold-soft); }
   #work .wk-who{ font-family:var(--mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(216,194,144,0.6); margin-bottom:12px; }
   #work .wk-title{ font-family:var(--display); font-weight:360; font-size:1.18rem; line-height:1.1; letter-spacing:-0.01em; transition:color .5s var(--ease); }
+  /* a linked build is the proof tier — underline it like the live thing it is */
+  #work .wk-link{ color:inherit; border-bottom:1px solid rgba(198,168,103,0.35); padding-bottom:2px;
+    transition:color .35s ease, border-color .35s ease; }
+  #work .wk-link:hover{ color:var(--gold-soft); border-color:var(--gold); }
   #work .wk-line{ color:rgba(236,234,224,0.56); font-size:.92rem; line-height:1.6; margin-top:12px; }
   #work .wcard .stack{ margin-top:16px; display:flex; flex-wrap:wrap; gap:7px; }
   #work .wcard .stack span{ font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(236,234,224,0.45); border:1px solid rgba(236,234,224,0.12); padding:4px 9px; border-radius:2px; }
@@ -527,10 +578,16 @@
     will-change:transform, width, height;
   }
   .detail-body{
+    position:relative;
     max-height:88vh; overflow-y:auto;
     -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
     padding:clamp(30px,5vw,64px) clamp(26px,5vw,64px) clamp(36px,5vw,60px);
   }
+  /* the discipline's emblem watermarks its own deed */
+  .detail-mark{ position:absolute; top:-36px; inset-inline-end:-36px; width:300px; height:300px;
+    opacity:.07; pointer-events:none; }
+  .detail-mark svg{ width:100%; height:100%; }
+  .detail-mark .fig, .detail-mark .fig2{ vector-effect:none; }
   .detail-close{
     position:absolute; top:14px; inset-inline-end:16px; z-index:2;
     width:44px; height:44px; line-height:1; font-size:24px;
@@ -639,6 +696,13 @@
   [dir="rtl"] .footrow .sig{ font-style:normal; }
   [dir="rtl"] .scene-card::after{ content:"التفاصيل والأسعار ↖"; font-family:var(--arabic-ui); letter-spacing:0; text-transform:none; font-size:13.5px; }
   html[lang="bs"] .scene-card::after{ content:"Detalji i cijene ↗"; }
+
+  /* ---------- 404 ---------- */
+  .nf{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:26px; text-align:center; padding:0 var(--gut); }
+  .nf-seal{ width:120px; height:120px; opacity:.85; }
+  .nf-eyebrow{ color:rgba(216,194,144,0.7); }
+  .nf h1{ font-weight:330; font-size:clamp(1.9rem,5vw,3.4rem); line-height:1.05; letter-spacing:-0.015em; }
 
   /* ---------- themed scrollbar (default grey bar gashes the dark theme) ---------- */
   html{ scrollbar-width:thin; scrollbar-color:rgba(198,168,103,0.28) transparent; }
