@@ -235,7 +235,12 @@
   .topnav a::after{ content:""; position:absolute; inset-inline-start:0; bottom:0; height:1px; width:0; background:var(--gold); transition:width .45s var(--ease); }
   .topnav a:hover{ color:var(--bone); }
   .topnav a:hover::after{ width:100%; }
-  @media (max-width:760px){ .topnav{ display:none; } }
+  /* mobile keeps the one link that matters — Contact — instead of losing all nav */
+  @media (max-width:760px){
+    .topnav{ gap:0; }
+    .topnav a{ display:none; }
+    .topnav a.nav-contact{ display:block; }
+  }
 
   /* ---------- content shell ---------- */
   .shell{ position:relative; z-index:2; }
@@ -432,6 +437,20 @@
   }
   .cta:hover{ border-color:var(--gold); background:rgba(198,168,103,0.08); color:var(--bone); transform:translateY(-2px); box-shadow:0 14px 40px rgba(198,168,103,0.12); }
   .cta .ar{ font-family:var(--arabic); font-size:18px; line-height:1; color:var(--gold-soft); }
+  /* the quiet reassurance under a CTA — answers "what happens if I write?" */
+  .cta-assure{ margin-top:16px; font-size:10px; letter-spacing:.22em; color:rgba(216,194,144,0.55); }
+  .begin-cta .cta-assure{ margin-top:14px; }
+
+  .copy-email{
+    margin-inline-start:10px; vertical-align:1px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+    color:rgba(216,194,144,0.75); background:transparent; cursor:pointer;
+    border:1px solid rgba(198,168,103,0.3); border-radius:2px; padding:4px 9px;
+    transition:color .3s ease, border-color .3s ease;
+  }
+  .copy-email:hover, .copy-email:focus-visible{ color:var(--bone); border-color:var(--gold); outline:none; }
+  .copy-email.did{ color:var(--gold-soft); border-color:var(--gold); }
+
   .cta-fallback{ margin-top:18px; font-size:13px; color:rgba(236,234,224,0.6); }
   .cta-fallback a{ color:var(--gold-soft); border-bottom:1px solid rgba(198,168,103,0.32); padding-bottom:1px; transition:border-color .3s ease, color .3s ease; }
   .cta-fallback a:hover{ color:var(--bone); border-color:var(--gold); }

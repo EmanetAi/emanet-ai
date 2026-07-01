@@ -34,6 +34,7 @@ export default function Deck() {
         'dl.get': 'What you get', 'dl.cost': 'What it costs', 'dl.approach': 'How we approach it',
         'dl.stack': 'Stack', 'dl.example': 'Example from our work',
         'aria.gate': 'Press the seal to be entrusted', 'aria.close': 'Close detail',
+        'ft.copy': 'Copy', 'ft.copied': 'Copied ✓',
       };
       var LOCS = ['en', 'bs', 'ar'];
       var curLoc = 'en';
@@ -159,7 +160,6 @@ export default function Deck() {
          1 orbits (AI) · 2 frames (web) · 3 lattice (data) ·
          4 compass (cloud) · 5 ward (security)
          ===================================================== */
-      var STAR125 = [0, 5, 10, 3, 8, 1, 6, 11, 4, 9, 2, 7];   /* {12/5} single-cycle order */
       function buildEmblem(kind: number) {
         var s = '<svg viewBox="0 0 ' + (2 * C) + ' ' + (2 * C) + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">';
         var i, p;
@@ -177,10 +177,20 @@ export default function Deck() {
           s += '<polygon class="fig2 faint" points="' + ringPoly(R * 0.46, 45, 4) + '"/>';
           s += '<polygon class="fig" points="' + ringPoly(R * 0.3, 0, 4) + '"/>';
           for (i = 0; i < 4; i++) { p = P(R, i * 90); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="4"/>'; }
-        } else if (kind === 3) {   /* lattice — twelve sources, one weave */
+        } else if (kind === 3) {   /* lattice — a polar grid: twelve sources, ordered rings.
+                                      deliberately starless: the {12/5} star polygon this
+                                      replaced read as overlapping triangles (hexagram). */
           s += '<polygon class="fig faint" points="' + ringPoly(R, 15, 12) + '"/>';
-          s += '<polygon class="fig2" points="' + ringPoly(R * 0.82, 15, 12, STAR125) + '"/>';
-          s += '<polygon class="fig" points="' + ringPoly(R * 0.38, 0, 6) + '"/>';
+          s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.62) + '"/>';
+          s += '<circle class="fig" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.3) + '"/>';
+          for (i = 0; i < 12; i++) {
+            var s3 = P(R * 0.3, 15 + i * 30), e3 = P(R, 15 + i * 30);
+            s += '<line class="fig faint" x1="' + n2(s3.x) + '" y1="' + n2(s3.y) + '" x2="' + n2(e3.x) + '" y2="' + n2(e3.y) + '"/>';
+          }
+          for (i = 0; i < 4; i++) {   /* diamond data-cells where the mid ring meets the axes */
+            var d3 = P(R * 0.62, 15 + i * 90);
+            s += '<rect class="fig2" x="' + n2(d3.x - 7) + '" y="' + n2(d3.y - 7) + '" width="14" height="14" transform="rotate(45 ' + n2(d3.x) + ' ' + n2(d3.y) + ')"/>';
+          }
           for (i = 0; i < 12; i++) { p = P(R, 15 + i * 30); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="3.4"/>'; }
         } else if (kind === 4) {   /* compass — spokes reaching out, pads at the ends */
           s += '<polygon class="fig" points="' + ringPoly(R * 0.85, 22.5, 8) + '"/>';
@@ -557,6 +567,9 @@ export default function Deck() {
       function enter() {
         if (entered) return;
         entered = true;
+        /* remember the ceremony was seen so a reload mid-visit doesn't lock the
+           visitor out again (session-scoped: a fresh visit still gets the seal) */
+        try { sessionStorage.setItem('emanet-entered', '1'); } catch (e) { }
 
         document.documentElement.classList.remove('gated');
         document.body.classList.add('entered');
@@ -594,13 +607,20 @@ export default function Deck() {
         }
       }
 
-      /* bind the press */
+      /* bind the press — and the gestures people actually try first. A locked
+         full-screen gate that ignores scrolling reads as a broken page, so the
+         instinctive wheel-spin / swipe / keypress opens it too. */
+      function gateAdvance() { if (!entered) enter(); }
+      window.addEventListener('wheel', gateAdvance, { passive: true });
+      window.addEventListener('touchmove', gateAdvance, { passive: true });
       var gateEl = document.getElementById('gate');
       if (gateEl) {
         gateEl.addEventListener('click', enter);
         gateEl.addEventListener('keydown', function (e) {
           if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') { e.preventDefault(); enter(); }
         });
+        /* focus the gate so Enter/Space work without a tab-hunt */
+        try { gateEl.focus({ preventScroll: true }); } catch (e) { }
         if (!REDUCE && window.matchMedia && window.matchMedia('(pointer:fine)').matches && cursor) {
           gateEl.addEventListener('mousemove', function (e) {
             cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
@@ -784,6 +804,22 @@ export default function Deck() {
       }
       document.addEventListener('keydown', onDetailKey);
 
+      /* ---------- copy email (mailto silently fails on machines with no mail
+         client configured — the click "does nothing" and reads as broken) ---------- */
+      var copyBtn: any = document.getElementById('copyEmail');
+      var copyTimer: any = null;
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+          var done = function () {
+            copyBtn.innerHTML = T('ft.copied');
+            copyBtn.classList.add('did');
+            clearTimeout(copyTimer);
+            copyTimer = setTimeout(function () { copyBtn.innerHTML = T('ft.copy'); copyBtn.classList.remove('did'); }, 1800);
+          };
+          try { navigator.clipboard.writeText('salam@emanet.ai').then(done, function () { }); } catch (e) { }
+        });
+      }
+
       /* ---------- nav solidify ---------- */
       var topbar = document.getElementById('topbar');
       function navState() { if (!topbar) return; if (scrollY() > 40) topbar.classList.add('solid'); else topbar.classList.remove('solid'); }
@@ -806,7 +842,13 @@ export default function Deck() {
         });
 
         setupReveals();
-        introDraw();
+
+        /* returning mid-session (reload, back-button): don't re-lock the page
+           behind the ceremony — pass straight through after a beat. */
+        var seenGate: any = null;
+        try { seenGate = sessionStorage.getItem('emanet-entered'); } catch (e) { }
+        if (seenGate) { setTimeout(enter, 350); }
+        else { introDraw(); }
 
         /* The thread is born from the corner mark AFTER entry and sits behind the gate
            until then — so it is NOT built at boot. Building it here ran a path-sampling
@@ -846,9 +888,12 @@ export default function Deck() {
         destroyed = true;
         if (rafId) cancelAnimationFrame(rafId);
         clearTimeout(resizeTimer);
+        clearTimeout(copyTimer);
         window.removeEventListener('scroll', onScrollWin);
         window.removeEventListener('resize', onResize);
         window.removeEventListener('load', rebuild);
+        window.removeEventListener('wheel', gateAdvance);
+        window.removeEventListener('touchmove', gateAdvance);
         document.removeEventListener('keydown', onDetailKey);
         try { document.documentElement.classList.remove('detail-locked'); } catch (e) { }
         try { if (ST && ST.getAll) { ST.getAll().forEach(function (t: any) { t.kill(); }); } } catch (e) { }
@@ -902,7 +947,7 @@ export default function Deck() {
             <div className="seam"></div>
           </div>
           <p className="hero-arabic arabic" lang="ar">أمانة</p>
-          <p className="hero-hint mono" data-i18n="gate.hint">press the seal to be entrusted</p>
+          <p className="hero-hint mono" data-i18n="gate.hint">press the seal — or just scroll</p>
         </div>
         <div className="cursor mono" id="cursor"><span data-i18n="gate.cursor">press to be entrusted</span></div>
       </div>
@@ -915,7 +960,7 @@ export default function Deck() {
             <a href="#practice" data-i18n="nav.practice">The Practice</a>
             <a href="#keepers" data-i18n="nav.keepers">The Keepers</a>
             <a href="#begin" data-i18n="nav.pricing">Pricing</a>
-            <a href="#contact" data-i18n="nav.contact">Contact</a>
+            <a href="#contact" className="nav-contact" data-i18n="nav.contact">Contact</a>
           </nav>
           <div className="langset" role="group" aria-label="Language">
             <button type="button" className="lang on" data-lang="en" lang="en">EN</button>
@@ -1184,6 +1229,7 @@ export default function Deck() {
               <span className="ar arabic" aria-hidden="true">أمانة</span>
               <span data-i18n="bg.cta">Begin with the first cut</span>
             </a>
+            <p className="cta-assure mono" data-i18n="bg.assure">First reply within a day — no obligation.</p>
           </div>
         </section>
 
@@ -1198,7 +1244,8 @@ export default function Deck() {
               <span className="ar" aria-hidden="true">أمانة</span>
               <span data-i18n="ft.cta">Place your trust</span>
             </a>
-            <p className="cta-fallback reveal d1" data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></p>
+            <p className="cta-fallback reveal d1"><span data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></span> <button className="copy-email mono" id="copyEmail" type="button" data-i18n="ft.copy">Copy</button></p>
+            <p className="cta-assure mono reveal d2" data-i18n="ft.assure">We reply within a day · no obligation · conversations stay private</p>
 
             <div className="footrow">
               <div className="sig" data-i18n="ft.sig">Held in trust. <span className="ar" aria-hidden="true">أمانة</span></div>
