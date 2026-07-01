@@ -47,10 +47,10 @@ const ORG_LD = {
   description: DESC,
   foundingDate: "2026",
   founder: [
-    { "@type": "Person", name: "Ajdin Salihović", jobTitle: "Data Engineer" },
-    { "@type": "Person", name: "Tarik Topalović", jobTitle: "AI Automation Engineer" },
-    { "@type": "Person", name: "Eman Čičkušić", jobTitle: "DevOps Engineer" },
-    { "@type": "Person", name: "Aner Atović", jobTitle: "Full-Stack Engineer" },
+    { "@type": "Person", name: "Ajdin Salihović", jobTitle: "Data Engineer", sameAs: "https://www.linkedin.com/in/ajdin-salihovic/" },
+    { "@type": "Person", name: "Tarik Topalović", jobTitle: "AI Automation Engineer", sameAs: "https://www.linkedin.com/in/tarik-topalovic-a83770263/" },
+    { "@type": "Person", name: "Eman Čičkušić", jobTitle: "DevOps Engineer", sameAs: "https://www.linkedin.com/in/eman-cickusic/" },
+    { "@type": "Person", name: "Aner Atović", jobTitle: "Full-Stack Engineer", sameAs: "https://www.linkedin.com/in/aner-atovic-55830522a/" },
   ],
   knowsAbout: ["AI automation", "Web & app development", "Data engineering", "Cloud & DevOps", "Security"],
 };

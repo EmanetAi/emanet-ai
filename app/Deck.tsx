@@ -1126,42 +1126,6 @@ export default function Deck() {
           </div>
         </section>
 
-        {/* KEEPERS */}
-        <section className="band keepers" id="keepers">
-          <i className="anchor a-right" data-anchor="7" data-beat="" aria-hidden="true"></i>
-          <div className="inner section-head reveal">
-            <span className="idx"><span className="node-pip"></span><span data-i18n="ke.idx">The Keepers</span></span>
-            <h2 className="display" data-i18n="ke.h">Four hands<br />on the same line.</h2>
-            <p data-i18n="ke.p">A small studio on purpose. Each keeper signs their own node. One named engineer owns your work end to end and answers for it directly — no handoff to people you never met.</p>
-          </div>
-          <div className="inner grid" id="keeper-grid">
-            <div className="keeper reveal d1">
-              <div className="av"></div>
-              <h3 className="kname">Ajdin Salihović</h3>
-              <p className="role" data-i18n="role.data">Data Engineer</p>
-              <p className="bio" data-i18n="bio.ajdin">Builds the pipelines and contracts the rest of us stand on.</p>
-            </div>
-            <div className="keeper reveal d2">
-              <div className="av"></div>
-              <h3 className="kname">Tarik Topalović</h3>
-              <p className="role" data-i18n="role.ai">AI Automation Engineer</p>
-              <p className="bio" data-i18n="bio.tarik">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
-            </div>
-            <div className="keeper reveal d3">
-              <div className="av"></div>
-              <h3 className="kname">Eman Čičkušić</h3>
-              <p className="role" data-i18n="role.devops">DevOps Engineer</p>
-              <p className="bio" data-i18n="bio.eman">Keeps the deploys boring and the lights on.</p>
-            </div>
-            <div className="keeper reveal d1">
-              <div className="av"></div>
-              <h3 className="kname">Aner Atović</h3>
-              <p className="role" data-i18n="role.fullstack">Full-Stack Engineer</p>
-              <p className="bio" data-i18n="bio.aner">From schema to screen — the whole stack, held together.</p>
-            </div>
-          </div>
-        </section>
-
         {/* SELECTED WORK — real builds, no client logos */}
         <section className="band work" id="work">
           <i className="anchor a-right" data-anchor="8" aria-hidden="true"></i>
@@ -1192,7 +1156,7 @@ export default function Deck() {
             <article className="wcard reveal d1" id="work-servisturbina">
               <p className="wk-who mono">Tarik</p>
               <h3 className="wk-title display"><a className="wk-link" href="https://servisturbina.ba" target="_blank" rel="noopener noreferrer">Servis Turbina ↗</a></h3>
-              <p className="wk-line" data-i18n="wl.servis">Website, gallery and admin panel for a turbine-repair service — live in production.</p>
+              <p className="wk-line" data-i18n="wl.servis">Website, gallery and admin panel for a turbine-repair service — created by Tarik, live in production.</p>
               <div className="stack"><span>Live</span><span>Admin</span><span>PHP</span></div>
             </article>
             <article className="wcard reveal d1" id="work-cloud-ops">
@@ -1228,9 +1192,45 @@ export default function Deck() {
           </div>
         </section>
 
+        {/* KEEPERS — after the work: first the proof, then the hands it came from */}
+        <section className="band keepers" id="keepers">
+          <i className="anchor a-left" data-anchor="7" data-beat="" aria-hidden="true"></i>
+          <div className="inner section-head reveal">
+            <span className="idx"><span className="node-pip"></span><span data-i18n="ke.idx">The Keepers</span></span>
+            <h2 className="display" data-i18n="ke.h">Four hands<br />on the same line.</h2>
+            <p data-i18n="ke.p">A small studio on purpose. Each keeper signs their own node. One named engineer owns your work end to end and answers for it directly — no handoff to people you never met.</p>
+          </div>
+          <div className="inner grid" id="keeper-grid">
+            <div className="keeper reveal d1">
+              <div className="av"></div>
+              <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/ajdin-salihovic/" target="_blank" rel="noopener noreferrer">Ajdin Salihović</a></h3>
+              <p className="role" data-i18n="role.data">Data Engineer</p>
+              <p className="bio" data-i18n="bio.ajdin">Builds the pipelines and contracts the rest of us stand on.</p>
+            </div>
+            <div className="keeper reveal d2">
+              <div className="av"></div>
+              <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/tarik-topalovic-a83770263/" target="_blank" rel="noopener noreferrer">Tarik Topalović</a></h3>
+              <p className="role" data-i18n="role.ai">AI Automation Engineer</p>
+              <p className="bio" data-i18n="bio.tarik">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
+            </div>
+            <div className="keeper reveal d3">
+              <div className="av"></div>
+              <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/eman-cickusic/" target="_blank" rel="noopener noreferrer">Eman Čičkušić</a></h3>
+              <p className="role" data-i18n="role.devops">DevOps Engineer</p>
+              <p className="bio" data-i18n="bio.eman">Keeps the deploys boring and the lights on.</p>
+            </div>
+            <div className="keeper reveal d1">
+              <div className="av"></div>
+              <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/aner-atovic-55830522a/" target="_blank" rel="noopener noreferrer">Aner Atović</a></h3>
+              <p className="role" data-i18n="role.fullstack">Full-Stack Engineer</p>
+              <p className="bio" data-i18n="bio.aner">From schema to screen — the whole stack, held together.</p>
+            </div>
+          </div>
+        </section>
+
         {/* PRINCIPLE — the one emerald breath, the halal ethos */}
         <section id="principle">
-          <i className="anchor a-left" data-anchor="8" data-beat="" aria-hidden="true"></i>
+          <i className="anchor a-right" data-anchor="8" data-beat="" aria-hidden="true"></i>
           <div className="pgrid">
             <div className="pwrap">
               <p className="p-eyebrow mono reveal"><span className="node-pip"></span><span data-i18n="pn.eyebrow">The line we keep</span></p>
@@ -1246,7 +1246,7 @@ export default function Deck() {
 
         {/* PROOF — understated */}
         <section className="band" id="proof">
-          <i className="anchor a-right" data-anchor="9" aria-hidden="true"></i>
+          <i className="anchor a-left" data-anchor="9" aria-hidden="true"></i>
           <div className="inner section-head reveal">
             <span className="idx" data-i18n="pf.idx">What we hold to</span>
             <h2 className="display" data-i18n="pf.h">We&apos;d rather show<br />than tell.</h2>
