@@ -1,20 +1,24 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SITE } from "./site";
 import "./globals.css";
 
-const SITE = "https://emanet-ai.vercel.app";
+/* Search-intent title (this single page is 100% of our SEO); the amanah
+   poetry lives on in the description and the page itself. */
+const TITLE = "Emanet AI — AI automation, web & data engineering studio · first build €200";
 const DESC =
-  "Emanet AI — an engineering studio that holds your technology in trust. AI automation, websites & apps, data, cloud and security, kept with care.";
+  "أمانة — a trust held in safekeeping. A four-person engineering studio building AI automation, websites & apps, data platforms, cloud and security — kept with care, handed back whole. First build €200, no retainer.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
-  title: "Emanet AI — أمانة, a trust held in safekeeping",
+  title: TITLE,
   description: DESC,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: SITE,
     siteName: "Emanet AI",
-    title: "Emanet AI — أمانة, a trust held in safekeeping",
+    title: TITLE,
     description: DESC,
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "Emanet AI — the seal" }],
   },
@@ -38,9 +42,16 @@ const ORG_LD = {
   "@type": "Organization",
   name: "Emanet AI",
   url: SITE,
+  logo: SITE + "/og.png",
   email: "salam@emanet.ai",
   description: DESC,
   foundingDate: "2026",
+  founder: [
+    { "@type": "Person", name: "Ajdin Salihović", jobTitle: "Data Engineer" },
+    { "@type": "Person", name: "Tarik Topalović", jobTitle: "AI Automation Engineer" },
+    { "@type": "Person", name: "Eman Čičkušić", jobTitle: "DevOps Engineer" },
+    { "@type": "Person", name: "Aner Atović", jobTitle: "Full-Stack Engineer" },
+  ],
   knowsAbout: ["AI automation", "Web & app development", "Data engineering", "Cloud & DevOps", "Security"],
 };
 
@@ -88,7 +99,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
+import { SITE } from "./site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: "https://emanet-ai.vercel.app/", priority: 1 }];
+  return [{ url: SITE + "/", priority: 1 }];
 }
