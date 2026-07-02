@@ -108,22 +108,21 @@ export default function Deck() {
       }
 
       /* =====================================================
-         GEOMETRY — an 8-fold khatam rosette in the brand's gold.
-         Layered so it reads rich but stays one clean vector: an
-         outer 8-point star (two overlaid squares = {8/2}), a
-         woven mid-ring (octagon + {8/3} star at 0.72R, secondary
-         tone), a sharp central {8/3} star, 8 radiating circuit
-         spokes with solder pads, and 8 node dots at the outer
-         points — those 8 nodes drive the corner accretion and
-         are where the thread is born, so the count stays at 8.
+         GEOMETRY — an 8-fold circuit medallion in the brand's
+         gold. STARLESS BY DESIGN: the earlier khatam weave
+         (overlaid squares + sharp {8/3} star) read as occult
+         iconography — same complaint as the old {12/5} lattice.
+         Now: octagon vault rings + concentric circles + radial
+         circuit spokes. The 8 node dots at the outer points
+         stay — they drive the corner accretion and are where
+         the thread is born, so the count stays at 8.
          ===================================================== */
       var C = 220, R = 150;
       function P(r: number, deg: number) { var a = (deg - 90) * Math.PI / 180; return { x: C + r * Math.cos(a), y: C + r * Math.sin(a) }; }
       function n2(v: number) { return Math.round(v * 100) / 100; }
       function poly(pts: any[]) { return pts.map(function (p: any) { return n2(p.x) + ',' + n2(p.y); }).join(' '); }
-      var STAR83 = [0, 3, 6, 1, 4, 7, 2, 5];   /* {8/3} connection order — sharp 8-point star */
-      function ringPoly(rad: number, offset: number, count: number, order?: any) {
-        var p = []; for (var j = 0; j < count; j++) { var idx = order ? order[j] : j; p.push(P(rad, offset + idx * (360 / count))); } return poly(p);
+      function ringPoly(rad: number, offset: number, count: number) {
+        var p = []; for (var j = 0; j < count; j++) { p.push(P(rad, offset + j * (360 / count))); } return poly(p);
       }
 
       function buildSeal(opts?: any) {
@@ -144,16 +143,20 @@ export default function Deck() {
           s += '</g>';
         }
 
-        /* outer 8-point star = two overlaid squares ({8/2}) — the green silhouette */
-        s += '<polygon class="draw fig2" points="' + ringPoly(R, 0, 4) + '" pathLength="1"/>';
-        s += '<polygon class="draw fig2" points="' + ringPoly(R, 45, 4) + '" pathLength="1"/>';
-        /* connecting octagon ring — sits between the two stars, forms the petal cells */
-        s += '<polygon class="draw fig faint" points="' + ringPoly(R * 0.74, 22.5, 8) + '" pathLength="1"/>';
-        /* inner 8-point star (two squares at 0.52R) — the gold weave nested inside */
-        s += '<polygon class="draw fig" points="' + ringPoly(R * 0.52, 0, 4) + '" pathLength="1"/>';
-        s += '<polygon class="draw fig" points="' + ringPoly(R * 0.52, 45, 4) + '" pathLength="1"/>';
-        /* sharp central {8/3} star (green), hollow middle */
-        s += '<polygon class="draw fig2" points="' + ringPoly(R * 0.26, 0, 8, STAR83) + '" pathLength="1"/>';
+        /* outer octagon — the vault's silhouette (green) */
+        s += '<polygon class="draw fig2" points="' + ringPoly(R, 22.5, 8) + '" pathLength="1"/>';
+        /* breathing circle just inside the rim (gold, faint) */
+        s += '<circle class="draw fig faint" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.86) + '" pathLength="1"/>';
+        /* mid octagon, offset a half-step — petal cells against the rim, no overlap */
+        s += '<polygon class="draw fig" points="' + ringPoly(R * 0.72, 0, 8) + '" pathLength="1"/>';
+        /* 8 circuit spokes: center ring -> mid ring, on the between-axes */
+        for (k = 0; k < 8; k++) {
+          var sp = P(R * 0.34, 22.5 + k * 45), ep = P(R * 0.72, 22.5 + k * 45);
+          s += '<line class="draw fig faint" x1="' + n2(sp.x) + '" y1="' + n2(sp.y) + '" x2="' + n2(ep.x) + '" y2="' + n2(ep.y) + '" pathLength="1"/>';
+        }
+        /* kept center: gold ring + green core medallion */
+        s += '<circle class="draw fig" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.34) + '" pathLength="1"/>';
+        s += '<circle class="draw fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.16) + '" pathLength="1"/>';
 
         if (traces) {
           s += '<g class="traces">';
@@ -214,18 +217,18 @@ export default function Deck() {
         } else if (kind === 4) {   /* compass — spokes reaching out, pads at the ends */
           s += '<polygon class="fig" points="' + ringPoly(R * 0.85, 22.5, 8) + '"/>';
           s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.55) + '"/>';
-          s += '<polygon class="fig2" points="' + ringPoly(R * 0.22, 0, 8, STAR83) + '"/>';
+          s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.2) + '"/>';  /* hub — starless */
           for (i = 0; i < 8; i++) {
             var a = P(R * 0.32, i * 45), b = P(R + 18, i * 45);
             s += '<line class="fig faint" x1="' + n2(a.x) + '" y1="' + n2(a.y) + '" x2="' + n2(b.x) + '" y2="' + n2(b.y) + '"/>';
             s += '<circle class="node" cx="' + n2(b.x) + '" cy="' + n2(b.y) + '" r="4"/>';
           }
-        } else {                   /* ward — rings of the vault, closed around the star */
+        } else {                   /* ward — rings of the vault, closed around the core */
           s += '<polygon class="fig2" points="' + ringPoly(R, 22.5, 8) + '"/>';
           s += '<polygon class="fig" points="' + ringPoly(R * 0.8, 0, 8) + '"/>';
           s += '<polygon class="fig2 faint" points="' + ringPoly(R * 0.62, 22.5, 8) + '"/>';
           s += '<polygon class="fig" points="' + ringPoly(R * 0.45, 0, 8) + '"/>';
-          s += '<polygon class="fig2" points="' + ringPoly(R * 0.28, 0, 8, STAR83) + '"/>';
+          s += '<circle class="fig2" cx="' + C + '" cy="' + C + '" r="' + n2(R * 0.24) + '"/>';  /* core — starless */
           for (i = 0; i < 8; i++) { p = P(R, 22.5 + i * 45); s += '<circle class="node" cx="' + n2(p.x) + '" cy="' + n2(p.y) + '" r="4"/>'; }
         }
         s += '</svg>';
