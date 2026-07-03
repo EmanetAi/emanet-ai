@@ -14,6 +14,9 @@ import { dict } from './dict';
 const WORKS: { id: string; who: string; title: string; href?: string; i18n: string; line: string; stack: string[] }[] = [
   { id: 'work-mostay', who: 'Tarik', title: 'MoStay ↗', href: 'https://github.com/TarikTopalovic/mostay-website', i18n: 'wl.mostay', line: 'Website for a boutique hotel in Mostar — fast static Next.js.', stack: ['Next.js', 'Static'] },
   { id: 'work-servisturbina', who: 'Tarik', title: 'Servis Turbina ↗', href: 'https://servisturbina.ba', i18n: 'wl.servis', line: 'Website, gallery and admin panel for a turbine-repair service — created by Tarik, live in production.', stack: ['Live', 'Admin', 'PHP'] },
+  { id: 'work-parallel-claude', who: 'Tarik', title: 'Parallel-Claude ↗', href: 'https://github.com/TarikTopalovic/parallel-claude', i18n: 'wl.parallel', line: 'Plans a goal, fans a team of AI workers out across tmux panes, and merges their output into one deliverable.', stack: ['Claude', 'tmux', 'Shell'] },
+  { id: 'work-hyperagent-relay', who: 'Tarik', title: 'HyperAgent Relay ↗', href: 'https://github.com/TarikTopalovic/hyperagent-relay', i18n: 'wl.relay', line: 'Call an async cloud agent like a blocking Python function — webhook in, Airtable mailbox out. Zero dependencies.', stack: ['Python', 'Webhooks', 'Airtable'] },
+  { id: 'work-digest', who: 'Tarik', title: 'Digest ↗', href: 'https://github.com/TarikTopalovic/digest', i18n: 'wl.digest', line: 'Local-first daily brief — one structured summary of Gmail, Slack and Calendar. SQLite cache, AI summaries.', stack: ['Python', 'SQLite', 'Claude'] },
   { id: 'work-cloud-ops', who: 'Eman', title: 'Intelligent Cloud-Ops Agent ↗', href: 'https://github.com/eman-cickusic/Intelligent-Cloud-Operations-Agent-LangChain-GCP', i18n: 'wl.cloudops', line: 'A LangChain agent that operates and reasons over Google Cloud infrastructure.', stack: ['LangChain', 'GCP', 'Python'] },
   { id: 'work-pipeline', who: 'Eman', title: 'Real-time Serverless Pipeline ↗', href: 'https://github.com/eman-cickusic/Real-Time-Serverless-Data-Pipeline-on-Google-Cloud', i18n: 'wl.pipeline', line: 'A streaming, serverless data pipeline on Google Cloud.', stack: ['GCP', 'Streaming', 'Serverless'] },
   { id: 'work-classroom', who: 'Eman', title: 'Classroom 2.0 ↗', href: 'https://github.com/eman-cickusic/classroom2', i18n: 'wl.classroom', line: 'Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.', stack: ['Kotlin', 'Compose', 'Firebase'] },
@@ -703,7 +706,7 @@ export default function Deck() {
         '01': {
           approach: 'We start by finding the handful of tasks actually worth automating — the repetitive ones eating your team’s time — not everything we could. Each assistant gets only the access it needs, keeps a record of what it did, and a limit it must respect. Your own documents stay where they are; nothing is copied somewhere you cannot see.',
           priceRows: [['First working version', '€200'], ['Full build', 'quoted by tasks & tools'], ['Running & upkeep', 'from €10 / mo']],
-          examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }]
+          examples: [{ t: 'Parallel-Claude', id: 'work-parallel-claude' }, { t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }]
         },
         '02': {
           approach: 'We get a small working version in front of you early and grow it in the open, so you are never waiting months for a big reveal. We build it cleanly so the next person can pick it up — not just to scrape by today. And we stay honest about what is done, what is rough, and what is still a guess.',
