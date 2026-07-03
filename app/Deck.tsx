@@ -12,8 +12,6 @@ import { dict } from './dict';
 
 /* Selected work — rendered twice into the marquee track for a seamless loop. */
 const WORKS: { id: string; who: string; title: string; href?: string; i18n: string; line: string; stack: string[] }[] = [
-  { id: 'work-parallel-claude', who: 'Tarik', title: 'Parallel-Claude', i18n: 'wl.parallel', line: 'Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.', stack: ['Python', 'Multi-agent', 'Internal'] },
-  { id: 'work-hyperagent-relay', who: 'Tarik', title: 'HyperAgent Relay', i18n: 'wl.relay', line: 'Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.', stack: ['Python', 'Webhooks', 'Internal'] },
   { id: 'work-mostay', who: 'Tarik', title: 'MoStay ↗', href: 'https://github.com/TarikTopalovic/mostay-website', i18n: 'wl.mostay', line: 'Website for a boutique hotel in Mostar — fast static Next.js.', stack: ['Next.js', 'Static'] },
   { id: 'work-servisturbina', who: 'Tarik', title: 'Servis Turbina ↗', href: 'https://servisturbina.ba', i18n: 'wl.servis', line: 'Website, gallery and admin panel for a turbine-repair service — created by Tarik, live in production.', stack: ['Live', 'Admin', 'PHP'] },
   { id: 'work-cloud-ops', who: 'Eman', title: 'Intelligent Cloud-Ops Agent ↗', href: 'https://github.com/eman-cickusic/Intelligent-Cloud-Operations-Agent-LangChain-GCP', i18n: 'wl.cloudops', line: 'A LangChain agent that operates and reasons over Google Cloud infrastructure.', stack: ['LangChain', 'GCP', 'Python'] },
@@ -705,7 +703,7 @@ export default function Deck() {
         '01': {
           approach: 'We start by finding the handful of tasks actually worth automating — the repetitive ones eating your team’s time — not everything we could. Each assistant gets only the access it needs, keeps a record of what it did, and a limit it must respect. Your own documents stay where they are; nothing is copied somewhere you cannot see.',
           priceRows: [['First working version', '€200'], ['Full build', 'quoted by tasks & tools'], ['Running & upkeep', 'from €10 / mo']],
-          examples: [{ t: 'Parallel-Claude', id: 'work-parallel-claude' }, { t: 'HyperAgent Relay', id: 'work-hyperagent-relay' }]
+          examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }]
         },
         '02': {
           approach: 'We get a small working version in front of you early and grow it in the open, so you are never waiting months for a big reveal. We build it cleanly so the next person can pick it up — not just to scrape by today. And we stay honest about what is done, what is rough, and what is still a guess.',
