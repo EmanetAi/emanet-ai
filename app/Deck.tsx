@@ -12,15 +12,15 @@ import { dict } from './dict';
 
 /* Selected work — rendered twice into the marquee track for a seamless loop. */
 const WORKS: { id: string; who: string; title: string; href?: string; i18n: string; line: string; stack: string[] }[] = [
-  { id: 'work-parallel-claude', who: 'Tarik', title: 'Parallel-Claude', i18n: 'wl.parallel', line: 'Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.', stack: ['Python', 'Multi-agent', 'CLI'] },
-  { id: 'work-hyperagent-relay', who: 'Tarik', title: 'HyperAgent Relay', i18n: 'wl.relay', line: 'Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.', stack: ['Python', 'Webhooks'] },
-  { id: 'work-mostay', who: 'Tarik', title: 'MoStay', i18n: 'wl.mostay', line: 'Website for a boutique hotel in Mostar — fast static Next.js.', stack: ['Next.js', 'Static'] },
+  { id: 'work-parallel-claude', who: 'Tarik', title: 'Parallel-Claude', i18n: 'wl.parallel', line: 'Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.', stack: ['Python', 'Multi-agent', 'Internal'] },
+  { id: 'work-hyperagent-relay', who: 'Tarik', title: 'HyperAgent Relay', i18n: 'wl.relay', line: 'Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.', stack: ['Python', 'Webhooks', 'Internal'] },
+  { id: 'work-mostay', who: 'Tarik', title: 'MoStay ↗', href: 'https://github.com/TarikTopalovic/mostay-website', i18n: 'wl.mostay', line: 'Website for a boutique hotel in Mostar — fast static Next.js.', stack: ['Next.js', 'Static'] },
   { id: 'work-servisturbina', who: 'Tarik', title: 'Servis Turbina ↗', href: 'https://servisturbina.ba', i18n: 'wl.servis', line: 'Website, gallery and admin panel for a turbine-repair service — created by Tarik, live in production.', stack: ['Live', 'Admin', 'PHP'] },
-  { id: 'work-cloud-ops', who: 'Eman', title: 'Intelligent Cloud-Ops Agent', i18n: 'wl.cloudops', line: 'A LangChain agent that operates and reasons over Google Cloud infrastructure.', stack: ['LangChain', 'GCP', 'Python'] },
-  { id: 'work-pipeline', who: 'Eman', title: 'Real-time Serverless Pipeline', i18n: 'wl.pipeline', line: 'A streaming, serverless data pipeline on Google Cloud.', stack: ['GCP', 'Streaming', 'Serverless'] },
-  { id: 'work-classroom', who: 'Eman', title: 'Classroom 2.0', i18n: 'wl.classroom', line: 'Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.', stack: ['Kotlin', 'Compose', 'Firebase'] },
-  { id: 'work-iac', who: 'Eman', title: 'Cloud security & IaC labs', i18n: 'wl.iac', line: 'Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.', stack: ['Terraform', 'GCP', 'Security'] },
-  { id: 'work-dataviz', who: 'Ajdin', title: 'Data visualization & research', i18n: 'wl.dataviz', line: 'Exploratory data analysis and visualization in Python, including a Spotify dataset study.', stack: ['Python', 'Pandas', 'Notebooks'] },
+  { id: 'work-cloud-ops', who: 'Eman', title: 'Intelligent Cloud-Ops Agent ↗', href: 'https://github.com/eman-cickusic/Intelligent-Cloud-Operations-Agent-LangChain-GCP', i18n: 'wl.cloudops', line: 'A LangChain agent that operates and reasons over Google Cloud infrastructure.', stack: ['LangChain', 'GCP', 'Python'] },
+  { id: 'work-pipeline', who: 'Eman', title: 'Real-time Serverless Pipeline ↗', href: 'https://github.com/eman-cickusic/Real-Time-Serverless-Data-Pipeline-on-Google-Cloud', i18n: 'wl.pipeline', line: 'A streaming, serverless data pipeline on Google Cloud.', stack: ['GCP', 'Streaming', 'Serverless'] },
+  { id: 'work-classroom', who: 'Eman', title: 'Classroom 2.0 ↗', href: 'https://github.com/eman-cickusic/classroom2', i18n: 'wl.classroom', line: 'Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.', stack: ['Kotlin', 'Compose', 'Firebase'] },
+  { id: 'work-iac', who: 'Eman', title: 'Cloud security & IaC labs ↗', href: 'https://github.com/eman-cickusic?tab=repositories', i18n: 'wl.iac', line: 'Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.', stack: ['Terraform', 'GCP', 'Security'] },
+  { id: 'work-dataviz', who: 'Ajdin', title: 'Data visualization & research ↗', href: 'https://github.com/AjdinSalihovic/Spotify-Data-Research', i18n: 'wl.dataviz', line: 'Exploratory data analysis and visualization in Python, including a Spotify dataset study.', stack: ['Python', 'Pandas', 'Notebooks'] },
 ];
 
 export default function Deck() {
@@ -1257,18 +1257,21 @@ export default function Deck() {
               <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/ajdin-salihovic/" target="_blank" rel="noopener noreferrer">Ajdin Salihović</a></h3>
               <p className="role" data-i18n="role.data">Data Engineer</p>
               <p className="bio" data-i18n="bio.ajdin">Builds the pipelines and contracts the rest of us stand on.</p>
+              <p className="kout"><a className="k-link" href="https://github.com/AjdinSalihovic" target="_blank" rel="noopener noreferrer">GitHub ↗</a></p>
             </div>
             <div className="keeper reveal d2">
               <div className="av"></div>
               <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/tarik-topalovic-a83770263/" target="_blank" rel="noopener noreferrer">Tarik Topalović</a></h3>
               <p className="role" data-i18n="role.ai">AI Automation Engineer</p>
               <p className="bio" data-i18n="bio.tarik">Designs agents that act with restraint — automation that knows its limits and asks before it crosses them.</p>
+              <p className="kout"><a className="k-link" href="https://github.com/TarikTopalovic" target="_blank" rel="noopener noreferrer">GitHub ↗</a></p>
             </div>
             <div className="keeper reveal d3">
               <div className="av"></div>
               <h3 className="kname"><a className="k-link" href="https://www.linkedin.com/in/eman-cickusic/" target="_blank" rel="noopener noreferrer">Eman Čičkušić</a></h3>
               <p className="role" data-i18n="role.devops">DevOps Engineer</p>
               <p className="bio" data-i18n="bio.eman">Keeps the deploys boring and the lights on.</p>
+              <p className="kout"><a className="k-link" href="https://github.com/eman-cickusic" target="_blank" rel="noopener noreferrer">GitHub ↗</a></p>
             </div>
             <div className="keeper reveal d1">
               <div className="av"></div>

@@ -405,6 +405,7 @@
   .keeper .k-link:hover, .keeper .k-link:focus-visible{ color:var(--gold-soft); border-color:var(--gold); outline:none; }
   .keeper .role{ font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(216,194,144,0.62); margin-top:6px; }
   .keeper .bio{ color:rgba(236,234,224,0.55); font-size:14.5px; margin-top:14px; max-width:30ch; }
+  .keeper .kout{ font-family:var(--mono); font-size:11px; letter-spacing:0.14em; margin-top:12px; color:rgba(216,194,144,0.62); }
 
   /* ---------- FAQ (native disclosure, hairline rows — no boxes) ---------- */
   #faq .faq-list{ max-width:820px; }
