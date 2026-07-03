@@ -19,8 +19,6 @@ const WORKS: { id: string; who: string; title: string; href?: string; i18n: stri
   { id: 'work-digest', who: 'Tarik', title: 'Digest ↗', href: 'https://github.com/TarikTopalovic/digest', i18n: 'wl.digest', line: 'Local-first daily brief — one structured summary of Gmail, Slack and Calendar. SQLite cache, AI summaries.', stack: ['Python', 'SQLite', 'Claude'] },
   { id: 'work-cloud-ops', who: 'Eman', title: 'Intelligent Cloud-Ops Agent ↗', href: 'https://github.com/eman-cickusic/Intelligent-Cloud-Operations-Agent-LangChain-GCP', i18n: 'wl.cloudops', line: 'A LangChain agent that operates and reasons over Google Cloud infrastructure.', stack: ['LangChain', 'GCP', 'Python'] },
   { id: 'work-pipeline', who: 'Eman', title: 'Real-time Serverless Pipeline ↗', href: 'https://github.com/eman-cickusic/Real-Time-Serverless-Data-Pipeline-on-Google-Cloud', i18n: 'wl.pipeline', line: 'A streaming, serverless data pipeline on Google Cloud.', stack: ['GCP', 'Streaming', 'Serverless'] },
-  { id: 'work-classroom', who: 'Eman', title: 'Classroom 2.0 ↗', href: 'https://github.com/eman-cickusic/classroom2', i18n: 'wl.classroom', line: 'Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.', stack: ['Kotlin', 'Compose', 'Firebase'] },
-  { id: 'work-iac', who: 'Eman', title: 'Cloud security & IaC labs ↗', href: 'https://github.com/eman-cickusic?tab=repositories', i18n: 'wl.iac', line: 'Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.', stack: ['Terraform', 'GCP', 'Security'] },
   { id: 'work-dataviz', who: 'Ajdin', title: 'Data visualization & research ↗', href: 'https://github.com/AjdinSalihovic/Spotify-Data-Research', i18n: 'wl.dataviz', line: 'Exploratory data analysis and visualization in Python, including a Spotify dataset study.', stack: ['Python', 'Pandas', 'Notebooks'] },
 ];
 
@@ -711,7 +709,7 @@ export default function Deck() {
         '02': {
           approach: 'We get a small working version in front of you early and grow it in the open, so you are never waiting months for a big reveal. We build it cleanly so the next person can pick it up — not just to scrape by today. And we stay honest about what is done, what is rough, and what is still a guess.',
           priceRows: [['First version · 1 review', '€200'], ['Full site / app', 'quoted by polish & features'], ['Hosting & maintenance', 'from €10 / mo']],
-          examples: [{ t: 'MoStay', id: 'work-mostay' }, { t: 'Classroom 2.0', id: 'work-classroom' }]
+          examples: [{ t: 'MoStay', id: 'work-mostay' }, { t: 'Servis Turbina', id: 'work-servisturbina' }]
         },
         '03': {
           approach: 'We treat your numbers like something you will have to stand behind, so they are traceable and tested from the start. The plumbing is built to fail loudly and recover quietly. And the same care keeps your data safe to use without it leaking where it should not.',
@@ -721,12 +719,12 @@ export default function Deck() {
         '04': {
           approach: 'Everything is written down as code, so your setup can be rebuilt instead of living in one person’s head. Updates are meant to be boring — no drama. We size things to what you actually use and read the bill with you, line by line.',
           priceRows: [['Setup', 'quoted by size'], ['Ongoing management', 'from €10 / mo']],
-          examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }, { t: 'Cloud security & IaC labs', id: 'work-iac' }]
+          examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }, { t: 'Real-time Serverless Pipeline', id: 'work-pipeline' }]
         },
         '05': {
           approach: 'We build safety in from the very first day, not as a check we schedule for the end. Passwords and access are handled carefully, backups are tested, and staying online is something you only think about when it is gone. We make what we build safe by default — we are not pretending to be your security team.',
           priceRows: [['Security', 'built into the build'], ['Monitoring & backups', 'from €10 / mo']],
-          examples: [{ t: 'Cloud security & IaC labs', id: 'work-iac' }]
+          examples: [{ t: 'Intelligent Cloud-Ops Agent', id: 'work-cloud-ops' }]
         }
       };
 
