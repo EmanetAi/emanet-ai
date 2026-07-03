@@ -7,7 +7,7 @@ import "./globals.css";
    poetry lives on in the description and the page itself. */
 const TITLE = "Emanet AI — AI automation, web & data engineering studio · first build €200";
 const DESC =
-  "أمانة — a trust held in safekeeping. A four-person engineering studio building AI automation, websites & apps, data platforms, cloud and security — kept with care, handed back whole. First build €200, no retainer.";
+  "Four-person engineering studio for AI automation, websites & apps, data platforms, cloud and security. First build €200, no retainer. أمانة — a trust kept and returned whole.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -45,6 +45,7 @@ const ORG_LD = {
   logo: SITE + "/og.png",
   email: "info@emanet-ai.com",
   description: DESC,
+  sameAs: ["https://github.com/EmanetAi"],
   foundingDate: "2026",
   founder: [
     { "@type": "Person", name: "Ajdin Salihović", jobTitle: "Data Engineer", sameAs: "https://www.linkedin.com/in/ajdin-salihovic/" },
