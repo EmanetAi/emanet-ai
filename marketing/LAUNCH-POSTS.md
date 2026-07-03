@@ -1,6 +1,6 @@
 # Emanet AI — Social / Launch Post Drafts
 
-Site: https://emanet-ai.vercel.app · Contact: salam@emanet.ai
+Site: https://emanet-ai.com · Contact: info@emanet-ai.com
 Voice: deliberate, understated, stewardship over salesmanship. "Emanet" = something held in trust.
 
 ---
@@ -23,7 +23,7 @@ We do AI automation & agents, web & app development, data engineering, cloud & D
 
 First project? **The First Cut — €200**, a simple site with one revision cycle. We earn the bigger build.
 
-Place your trust → emanet-ai.vercel.app
+Place your trust → emanet-ai.com
 
 ---
 
@@ -41,7 +41,7 @@ AI agents, software, data pipelines, cloud — built to be inherited, not leased
 
 If you've ever felt like a tenant in your own product, let's talk.
 
-emanet-ai.vercel.app · salam@emanet.ai
+emanet-ai.com · info@emanet-ai.com
 
 ---
 
@@ -53,7 +53,7 @@ Emanet AI is live — a studio for AI agents, software & data infra, built local
 
 First cut: €200.
 
-https://emanet-ai.vercel.app
+https://emanet-ai.com
 
 ---
 
@@ -75,7 +75,7 @@ https://emanet-ai.vercel.app
 
 5/ Start small: The First Cut — €200, a simple site + one revision. We earn the bigger build.
 
-Place your trust → https://emanet-ai.vercel.app
+Place your trust → https://emanet-ai.com
 
 ---
 
@@ -87,7 +87,7 @@ Emanet AI is live. AI agents, software, and data infrastructure — built local-
 
 You own the keys. Not us.
 
-→ Link in bio · salam@emanet.ai
+→ Link in bio · info@emanet-ai.com
 
 #AI #SoftwareStudio #DataEngineering #LocalFirst #AIagents
 
@@ -100,7 +100,7 @@ Emanet AI is live 🚀
 We build AI agents, software & data infra you actually *own* — local-first, source you can read, keys you keep. No lock-in.
 
 First project's €200. Take a look 👇
-https://emanet-ai.vercel.app
+https://emanet-ai.com
 
 ---
 
@@ -112,4 +112,4 @@ Trust is earned, so we go small first.
 
 That's how Emanet AI works: stewardship before the sale.
 
-emanet-ai.vercel.app · salam@emanet.ai
+emanet-ai.com · info@emanet-ai.com
