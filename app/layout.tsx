@@ -43,7 +43,7 @@ const ORG_LD = {
   name: "Emanet AI",
   url: SITE,
   logo: SITE + "/og.png",
-  email: "salam@emanet.ai",
+  email: "info@emanet-ai.com",
   description: DESC,
   foundingDate: "2026",
   founder: [
