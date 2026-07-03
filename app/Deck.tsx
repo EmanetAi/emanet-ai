@@ -956,6 +956,74 @@ export default function Deck() {
             else { t.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth' }); }
           });
         });
+
+        /* ---------- WORK RAIL: auto-drift, but hands win. The rail is a native
+           scroller; a rAF loop drifts it while nobody is touching it. Hover,
+           press, drag, focus or any user scroll pauses the drift, and it
+           resumes a beat after you let go. Content is rendered twice, so
+           wrapping at one copy-width (50% + half a gap) loops seamlessly —
+           the jump lands on identical pixels. Reduced motion: no drift at all,
+           the rail is still hand-scrollable. */
+        (function () {
+          var rail: any = document.querySelector('#work .work-rail');
+          var track: any = document.querySelector('#work .work-track');
+          if (!rail || !track) return;
+          var hovered = false, held = false, dragging = false, focused = false;
+          var idleUntil = 0, dragX = 0, dragged = 0;
+          var pos = -1, last = 0;                      /* our float position; -1 = resync from DOM */
+          var SPEED = 0.05;                            /* px per ms ≈ the old 60s lap */
+          function resume(ms: number) { held = false; dragging = false; idleUntil = Date.now() + ms; }
+          /* rtl flips scrollLeft's sign; m() normalizes it to a positive distance */
+          function m() { return document.documentElement.getAttribute('dir') === 'rtl' ? -1 : 1; }
+          function period() { return track.scrollWidth / 2 + 13; } /* one copy = 50% + half a gap */
+          rail.addEventListener('pointerenter', function (e: any) { if (e.pointerType === 'mouse') hovered = true; });
+          rail.addEventListener('pointerleave', function (e: any) { if (e.pointerType === 'mouse') { hovered = false; resume(1200); } });
+          rail.addEventListener('focusin', function () { focused = true; });
+          rail.addEventListener('focusout', function () { focused = false; resume(1200); });
+          rail.addEventListener('pointerdown', function (e: any) {
+            held = true;                               /* touch: native pan takes it from here */
+            if (e.pointerType !== 'mouse') return;
+            dragging = true; dragged = 0; dragX = e.clientX;
+            try { rail.setPointerCapture(e.pointerId); } catch (err) { }
+          });
+          rail.addEventListener('pointermove', function (e: any) {
+            if (!dragging) return;
+            var dx = e.clientX - dragX; dragX = e.clientX; dragged += Math.abs(dx);
+            rail.scrollLeft -= dx;                     /* scroll handler treats it as user */
+          });
+          rail.addEventListener('pointerup', function () { resume(2000); });
+          rail.addEventListener('pointercancel', function () { resume(2500); });
+          /* a drag that moved is not a click on a card link */
+          rail.addEventListener('click', function (e: any) {
+            if (dragged > 6) { e.preventDefault(); e.stopPropagation(); dragged = 0; }
+          }, true);
+          /* our writes land exactly on pos, so any reading that strays from it is
+             the user's hand (scroll events coalesce per frame — a boolean flag
+             would let a user wheel hide behind a drift write; distance doesn't lie) */
+          rail.addEventListener('scroll', function () {
+            var d = m() * rail.scrollLeft;
+            if (pos >= 0 && Math.abs(d - pos) <= 1.5) return;   /* our own write */
+            idleUntil = Date.now() + 2500;             /* wheel, swipe momentum, scrollbar, drag */
+            pos = d;
+            /* user hit the copy seam — jump one period, pixels are identical */
+            var P = period(), max = rail.scrollWidth - rail.clientWidth;
+            if (d < 1 && max > P) { pos = d + P; rail.scrollLeft = m() * pos; }
+            else if (d > max - 1 && max > P) { pos = d - P; rail.scrollLeft = m() * pos; }
+          }, { passive: true });
+          function tick(t: number) {
+            var dt = Math.min(t - last, 100); last = t;
+            var P = period();
+            var idle = !hovered && !held && !focused && Date.now() > idleUntil;
+            if (!REDUCE && idle && !document.hidden && P > rail.clientWidth) {
+              if (pos < 0) pos = m() * rail.scrollLeft;
+              pos += SPEED * dt;
+              if (pos >= P) pos -= P;
+              rail.scrollLeft = m() * pos;
+            }
+            requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        })();
       }
 
       if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', boot); }

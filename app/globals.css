@@ -521,21 +521,18 @@
   .footrow .legal{ font-family:var(--mono); font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(236,234,224,0.62); }
   body.powered .footrow .sig .ar{ text-shadow:0 0 13px rgba(198,168,103,0.26); }
 
-  /* ---------- SELECTED WORK (endless gallery — cards drift by, pause on hover) ---------- */
+  /* ---------- SELECTED WORK (endless gallery — drifts on its own, but a real
+     scroller underneath: swipe/drag/hover stops it so cards can be read) ---------- */
   #work .work-rail{
-    overflow:hidden; margin-top:56px;
+    overflow-x:auto; margin-top:56px; cursor:grab;
+    overscroll-behavior-x:contain; scrollbar-width:none;
     -webkit-mask-image:linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
     mask-image:linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
   }
+  #work .work-rail::-webkit-scrollbar{ display:none; }
   #work .work-track{
     display:flex; gap:26px; width:max-content; padding:6px 0;
-    animation:work-marquee 60s linear infinite;
   }
-  /* pause so cards stay readable / clickable under the cursor or keyboard focus */
-  #work .work-rail:hover .work-track,
-  #work .work-rail:focus-within .work-track{ animation-play-state:paused; }
-  /* one full copy of the set = 50% of the track + half a gap */
-  @keyframes work-marquee{ from{ transform:translateX(0); } to{ transform:translateX(calc(-50% - 13px)); } }
   #work .wcard{
     position:relative; flex:0 0 300px; border-top:1px solid rgba(198,168,103,0.18); padding-top:20px;
     scroll-margin-top:90px; transition:border-color .5s var(--ease), transform .55s var(--ease);
