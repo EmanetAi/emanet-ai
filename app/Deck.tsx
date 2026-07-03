@@ -10,6 +10,19 @@ import Lenis from 'lenis';
 import { track } from '@vercel/analytics';
 import { dict } from './dict';
 
+/* Selected work — rendered twice into the marquee track for a seamless loop. */
+const WORKS: { id: string; who: string; title: string; href?: string; i18n: string; line: string; stack: string[] }[] = [
+  { id: 'work-parallel-claude', who: 'Tarik', title: 'Parallel-Claude', i18n: 'wl.parallel', line: 'Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.', stack: ['Python', 'Multi-agent', 'CLI'] },
+  { id: 'work-hyperagent-relay', who: 'Tarik', title: 'HyperAgent Relay', i18n: 'wl.relay', line: 'Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.', stack: ['Python', 'Webhooks'] },
+  { id: 'work-mostay', who: 'Tarik', title: 'MoStay', i18n: 'wl.mostay', line: 'Website for a boutique hotel in Mostar — fast static Next.js.', stack: ['Next.js', 'Static'] },
+  { id: 'work-servisturbina', who: 'Tarik', title: 'Servis Turbina ↗', href: 'https://servisturbina.ba', i18n: 'wl.servis', line: 'Website, gallery and admin panel for a turbine-repair service — created by Tarik, live in production.', stack: ['Live', 'Admin', 'PHP'] },
+  { id: 'work-cloud-ops', who: 'Eman', title: 'Intelligent Cloud-Ops Agent', i18n: 'wl.cloudops', line: 'A LangChain agent that operates and reasons over Google Cloud infrastructure.', stack: ['LangChain', 'GCP', 'Python'] },
+  { id: 'work-pipeline', who: 'Eman', title: 'Real-time Serverless Pipeline', i18n: 'wl.pipeline', line: 'A streaming, serverless data pipeline on Google Cloud.', stack: ['GCP', 'Streaming', 'Serverless'] },
+  { id: 'work-classroom', who: 'Eman', title: 'Classroom 2.0', i18n: 'wl.classroom', line: 'Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.', stack: ['Kotlin', 'Compose', 'Firebase'] },
+  { id: 'work-iac', who: 'Eman', title: 'Cloud security & IaC labs', i18n: 'wl.iac', line: 'Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.', stack: ['Terraform', 'GCP', 'Security'] },
+  { id: 'work-dataviz', who: 'Ajdin', title: 'Data visualization & research', i18n: 'wl.dataviz', line: 'Exploratory data analysis and visualization in Python, including a Spotify dataset study.', stack: ['Python', 'Pandas', 'Notebooks'] },
+];
+
 export default function Deck() {
   useEffect(() => {
     var rafId = 0;
@@ -78,7 +91,7 @@ export default function Deck() {
            where mailto conversions die */
         Array.prototype.forEach.call(document.querySelectorAll('a.cta[data-mail]'), function (a: any) {
           var sub = T(a.getAttribute('data-mail') === 'first' ? 'mail.sub.first' : 'mail.sub.main');
-          a.setAttribute('href', 'mailto:salam@emanet.ai?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(T('mail.body')));
+          a.setAttribute('href', 'mailto:info@emanet-ai.com?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(T('mail.body')));
         });
         Array.prototype.forEach.call(document.querySelectorAll('.langset .lang'), function (b: any) {
           b.classList.toggle('on', b.getAttribute('data-lang') === loc);
@@ -861,7 +874,7 @@ export default function Deck() {
             copyTimers[ci] = setTimeout(function () { copyBtn.innerHTML = T('ft.copy'); copyBtn.classList.remove('did'); }, 1800);
           };
           beat('copy_email');
-          try { navigator.clipboard.writeText('salam@emanet.ai').then(done, function () { }); } catch (e) { }
+          try { navigator.clipboard.writeText('info@emanet-ai.com').then(done, function () { }); } catch (e) { }
         });
       });
 
@@ -1137,61 +1150,28 @@ export default function Deck() {
             <h2 className="display" data-i18n="wo.h">Things we have<br />actually shipped.</h2>
             <p data-i18n="wo.p">Real builds from the team — not client logos, not case-study theatre. The work, named plainly.</p>
           </div>
-          <div className="inner work-grid">
-            <article className="wcard reveal d1" id="work-parallel-claude">
-              <p className="wk-who mono">Tarik</p>
-              <h3 className="wk-title display">Parallel-Claude</h3>
-              <p className="wk-line" data-i18n="wl.parallel">Decompose a goal into a fleet of AI agents working in parallel, then merge their output into one result.</p>
-              <div className="stack"><span>Python</span><span>Multi-agent</span><span>CLI</span></div>
-            </article>
-            <article className="wcard reveal d2" id="work-hyperagent-relay">
-              <p className="wk-who mono">Tarik</p>
-              <h3 className="wk-title display">HyperAgent Relay</h3>
-              <p className="wk-line" data-i18n="wl.relay">Call an AI agent like a normal function — webhook trigger plus a mailbox relay, zero dependencies.</p>
-              <div className="stack"><span>Python</span><span>Webhooks</span></div>
-            </article>
-            <article className="wcard reveal d3" id="work-mostay">
-              <p className="wk-who mono">Tarik</p>
-              <h3 className="wk-title display">MoStay</h3>
-              <p className="wk-line" data-i18n="wl.mostay">Website for a boutique hotel in Mostar — fast static Next.js.</p>
-              <div className="stack"><span>Next.js</span><span>Static</span></div>
-            </article>
-            <article className="wcard reveal d1" id="work-servisturbina">
-              <p className="wk-who mono">Tarik</p>
-              <h3 className="wk-title display"><a className="wk-link" href="https://servisturbina.ba" target="_blank" rel="noopener noreferrer">Servis Turbina ↗</a></h3>
-              <p className="wk-line" data-i18n="wl.servis">Website, gallery and admin panel for a turbine-repair service — created by Tarik, live in production.</p>
-              <div className="stack"><span>Live</span><span>Admin</span><span>PHP</span></div>
-            </article>
-            <article className="wcard reveal d1" id="work-cloud-ops">
-              <p className="wk-who mono">Eman</p>
-              <h3 className="wk-title display">Intelligent Cloud-Ops Agent</h3>
-              <p className="wk-line" data-i18n="wl.cloudops">A LangChain agent that operates and reasons over Google Cloud infrastructure.</p>
-              <div className="stack"><span>LangChain</span><span>GCP</span><span>Python</span></div>
-            </article>
-            <article className="wcard reveal d2" id="work-pipeline">
-              <p className="wk-who mono">Eman</p>
-              <h3 className="wk-title display">Real-time Serverless Pipeline</h3>
-              <p className="wk-line" data-i18n="wl.pipeline">A streaming, serverless data pipeline on Google Cloud.</p>
-              <div className="stack"><span>GCP</span><span>Streaming</span><span>Serverless</span></div>
-            </article>
-            <article className="wcard reveal d3" id="work-classroom">
-              <p className="wk-who mono">Eman</p>
-              <h3 className="wk-title display">Classroom 2.0</h3>
-              <p className="wk-line" data-i18n="wl.classroom">Native Android app: QR attendance, live quizzes, AI explanations, real-time teaching insight.</p>
-              <div className="stack"><span>Kotlin</span><span>Compose</span><span>Firebase</span></div>
-            </article>
-            <article className="wcard reveal d1" id="work-iac">
-              <p className="wk-who mono">Eman</p>
-              <h3 className="wk-title display">Cloud security &amp; IaC labs</h3>
-              <p className="wk-line" data-i18n="wl.iac">Hardening and infrastructure-as-code across GCP: Cloud Armor, KMS, VPC, GKE.</p>
-              <div className="stack"><span>Terraform</span><span>GCP</span><span>Security</span></div>
-            </article>
-            <article className="wcard reveal d2" id="work-dataviz">
-              <p className="wk-who mono">Ajdin</p>
-              <h3 className="wk-title display">Data visualization &amp; research</h3>
-              <p className="wk-line" data-i18n="wl.dataviz">Exploratory data analysis and visualization in Python, including a Spotify dataset study.</p>
-              <div className="stack"><span>Python</span><span>Pandas</span><span>Notebooks</span></div>
-            </article>
+          <div className="work-rail reveal" aria-label="Project gallery">
+            <div className="work-track">
+              {[false, true].map((dup) =>
+                WORKS.map((w) => (
+                  <article
+                    className="wcard"
+                    key={w.id + (dup ? '-dup' : '')}
+                    id={dup ? undefined : w.id}
+                    aria-hidden={dup || undefined}
+                  >
+                    <p className="wk-who mono">{w.who}</p>
+                    <h3 className="wk-title display">
+                      {w.href
+                        ? <a className="wk-link" href={w.href} target="_blank" rel="noopener noreferrer" tabIndex={dup ? -1 : undefined}>{w.title}</a>
+                        : w.title}
+                    </h3>
+                    <p className="wk-line" data-i18n={w.i18n}>{w.line}</p>
+                    <div className="stack">{w.stack.map((s) => <span key={s}>{s}</span>)}</div>
+                  </article>
+                ))
+              )}
+            </div>
           </div>
         </section>
 
@@ -1299,11 +1279,11 @@ export default function Deck() {
             </div>
           </div>
           <div className="inner begin-cta reveal d1">
-            <a className="cta" data-mail="first" href="mailto:salam@emanet.ai?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
+            <a className="cta" data-mail="first" href="mailto:info@emanet-ai.com?subject=The%20first%20cut%20%E2%80%94%20%E2%82%AC200">
               <span className="ar arabic" aria-hidden="true">أمانة</span>
               <span data-i18n="bg.cta">Begin with the first cut</span>
             </a>
-            <p className="cta-fallback"><span data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></span> <button className="copy-email mono" type="button" data-i18n="ft.copy">Copy</button></p>
+            <p className="cta-fallback"><span data-i18n="ft.fallback">or email <a href="mailto:info@emanet-ai.com">info@emanet-ai.com</a></span> <button className="copy-email mono" type="button" data-i18n="ft.copy">Copy</button></p>
             <p className="cta-assure mono" data-i18n="bg.assure">First reply within a day — no obligation.</p>
           </div>
         </section>
@@ -1347,16 +1327,16 @@ export default function Deck() {
           <div className="inner">
             <div className="pretitle mono reveal" data-i18n="ft.pretitle">The line returns · <span className="arabic" lang="ar">أمانة</span></div>
             <h2 className="display reveal" data-i18n="ft.h">Place a trust<br />in <em>steady hands.</em></h2>
-            <a className="cta reveal d1" data-mail="main" href="mailto:salam@emanet.ai">
+            <a className="cta reveal d1" data-mail="main" href="mailto:info@emanet-ai.com">
               <span className="ar" aria-hidden="true">أمانة</span>
               <span data-i18n="ft.cta">Place your trust</span>
             </a>
-            <p className="cta-fallback reveal d1"><span data-i18n="ft.fallback">or email <a href="mailto:salam@emanet.ai">salam@emanet.ai</a></span> <button className="copy-email mono" type="button" data-i18n="ft.copy">Copy</button></p>
+            <p className="cta-fallback reveal d1"><span data-i18n="ft.fallback">or email <a href="mailto:info@emanet-ai.com">info@emanet-ai.com</a></span> <button className="copy-email mono" type="button" data-i18n="ft.copy">Copy</button></p>
             <p className="cta-assure mono reveal d2" data-i18n="ft.assure">We reply within a day · no obligation · conversations stay private</p>
 
             <div className="footrow">
               <div className="sig" data-i18n="ft.sig">Held in trust. <span className="ar" aria-hidden="true">أمانة</span></div>
-              <div className="legal">Emanet AI · 2026 · salam@emanet.ai</div>
+              <div className="legal">Emanet AI · 2026 · info@emanet-ai.com</div>
             </div>
           </div>
         </footer>
