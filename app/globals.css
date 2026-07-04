@@ -293,7 +293,10 @@
   #threshold{ min-height:100vh; display:flex; align-items:center; padding:18vh 0 14vh; }
   .threshold-grid{ display:grid; grid-template-columns:minmax(0,1fr) 30%; gap:48px; align-items:end; }
   .threshold-sub{ color:var(--gold-soft); opacity:.8; margin-bottom:18px; }
-  .threshold-h{ font-size:clamp(2.7rem, 8.4vw, 8rem); max-width:14ch; }
+  /* auto optical sizing pushes Fraunces past opsz ~90 at this size, where the
+     lowercase-e crossbar thins to sub-pixel and vanishes. 72 is the max that
+     keeps it visible; only this heading gets big enough to hit the problem. */
+  .threshold-h{ font-size:clamp(2.7rem, 8.4vw, 8rem); max-width:14ch; font-variation-settings:"opsz" 72; }
   /* overflow:hidden masks the slide-up reveal; line-height:1.0 leaves no room for
      descenders (g, y) so they were clipped. pad the box, claw it back with margin. */
   .threshold-h .ln{ display:block; overflow:hidden; padding-bottom:0.2em; margin-bottom:-0.2em; }
