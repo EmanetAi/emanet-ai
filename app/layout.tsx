@@ -27,9 +27,6 @@ export const metadata: Metadata = {
     description: DESC,
     images: ["/og.png"],
   },
-  icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B130E'/%3E%3Cg fill='none' stroke='%23C6A867' stroke-width='1.1'%3E%3Ccircle cx='16' cy='16' r='10'/%3E%3Cpath d='M16 6 L23.07 23.07 L6 16 L23.07 8.93 L16 26 L8.93 8.93 L26 16 L8.93 23.07 Z'/%3E%3C/g%3E%3C/svg%3E",
-  },
 };
 
 export const viewport: Viewport = {
