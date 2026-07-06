@@ -7,7 +7,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Flip } from 'gsap/Flip';
 import Lenis from 'lenis';
-import { track } from '@vercel/analytics';
 import { dict } from './dict';
 
 /* Selected work — rendered twice into the marquee track for a seamless loop. */
@@ -52,8 +51,8 @@ export default function Deck() {
         'mail.sub.main': 'A trust to place with you',
         'mail.body': 'What we do:\n\nWhat we need first:\n\nRough timing:\n',
       };
-      /* one quiet telemetry wrapper — never let analytics break the page */
-      function beat(name: string, data?: any) { try { track(name, data); } catch (e) { } }
+      /* no analytics backend since leaving Vercel; kept as a no-op so call sites don't churn */
+      function beat(name: string, data?: any) { void name; void data; }
       var LOCS = ['en', 'bs', 'ar'];
       var curLoc = 'en';
       function T(k: string) {
