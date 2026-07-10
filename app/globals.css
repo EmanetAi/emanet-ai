@@ -427,12 +427,10 @@
   .faq-item[open] .faq-x{ transform:rotate(45deg); }
   .faq-a{ color:rgba(236,234,224,0.62); max-width:58ch; padding:0 0 26px; line-height:1.7; }
 
-  /* ---------- PRINCIPLE (the one emerald breath — translucent, thread reads through) ---------- */
+  /* ---------- PRINCIPLE (sits on the page's own ambient wash — no separate glow) ---------- */
+  /* ponytail: the centered emerald spotlight made this the only section a different
+     colour than the rest; removed it so it reads on the same background as #proof etc. */
   #principle{ position:relative; padding:clamp(90px,16vh,200px) var(--gut); }
-  #principle::before{
-    content:""; position:absolute; inset:0; pointer-events:none;
-    background:radial-gradient(80% 120% at 50% 50%, rgba(20,58,40,0.55) 0%, rgba(20,58,40,0) 70%);
-  }
   /* ponytail: two-part composition so the right isn't dead void — statement left,
      a large faint أمانة anchoring the right. Centered container, not pinned far-left. */
   #principle .pgrid{ position:relative; z-index:1; max-width:1180px; margin:0 auto;

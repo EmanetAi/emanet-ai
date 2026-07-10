@@ -1,0 +1,25 @@
+EMANET AI — brand tokens for Figma
+==================================
+
+Colors (hex)
+  BONE   #ECEAE0   background paper / off-white text on dark
+  EMER   #143A28   deep emerald, primary dark surface
+  INK    #0B130E   near-black, base background
+  GREEN  #5E9B7A   emerald-lit — the seal's GREEN strokes (readable on dark)
+  GOLD   #C6A867   accent / stroke / node dots
+  GOLDS  #D8C290   soft gold, faint strokes + secondary text on dark
+
+Fonts (all free, pick by name in Figma's font picker — no files needed)
+  Display     Fraunces        (Google Fonts) — headlines + the "Emanet" wordmark
+  Body        Switzer         (Fontshare)    — body copy
+  Mono/label  Spline Sans Mono (Google Fonts) — eyebrow labels, ALL CAPS, +0.32em tracking
+  Arabic UI   IBM Plex Sans Arabic (Google Fonts) — legible Arabic body/UI text
+  Arabic deco Amiri           (Google Fonts) — the أمانة mark only
+
+The seal  (STARLESS — matches the live site, app/Deck.tsx buildSeal)
+  An 8-fold circuit medallion: green outer octagon + faint gold breathing
+  circle + gold mid octagon + 8 gold spokes + gold inner ring + green core
+  + 8 gold node dots. NO star polygon, NO hexagram — the old {8/3} octagram
+  star was dropped on purpose (read as occult iconography).
+  Pure vector, built from math (angles/radii) so it holds at any size.
+  Import straight into Figma: drag the .svg in, it stays fully editable.

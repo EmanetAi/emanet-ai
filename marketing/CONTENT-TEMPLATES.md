@@ -2,6 +2,7 @@
 
 Fill-in-the-blank templates for ongoing posting (Buffer queue: LinkedIn / Instagram / TikTok).
 Launch-day copy lives in `LAUNCH-POSTS.md`; branded card visuals in `cards/` (generator: `gen_cards.py`).
+Visual cards for T1/T3/T5/T6 (the recurring types, not launch-only): `templates/gen_content_cards.py` — edit the vars at the bottom, rerun, get new PNGs.
 
 **How to use:** copy a template, replace every `{PLACEHOLDER}`, delete lines that don't apply, queue it.
 

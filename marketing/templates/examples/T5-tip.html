@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Spline+Sans+Mono:wght@300..600&family=Amiri:wght@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bone:#ECEAE0;--emer:#143A28;--ink:#0B130E;--gold:#C6A867;--golds:#D8C290;
+--display:"Fraunces",Georgia,serif;--body:"Switzer","Helvetica Neue",Arial,sans-serif;
+--mono:"Spline Sans Mono",ui-monospace,monospace;--arabic:"Amiri",serif}
+html,body{width:1080px;height:1080px;overflow:hidden}
+.stage{position:relative;width:1080px;height:1080px;
+ background:radial-gradient(120% 80% at 80% -8%, rgba(20,58,40,0.55) 0%, rgba(20,58,40,0) 46%),
+  radial-gradient(140% 120% at 6% 112%, rgba(16,43,30,0.60) 0%, rgba(16,43,30,0) 50%),
+  radial-gradient(120% 92% at 50% 30%, #10201A 0%, var(--ink) 62%, #060B08 100%);
+ color:var(--bone);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow:hidden}
+.frame{position:absolute;inset:46px;border:1px solid rgba(198,168,103,0.16);pointer-events:none}
+.tick{position:absolute;width:20px;height:20px;border:0 solid var(--gold);opacity:0.55}
+.tl{top:38px;left:38px;border-top-width:1px;border-left-width:1px}
+.tr{top:38px;right:38px;border-top-width:1px;border-right-width:1px}
+.bl{bottom:38px;left:38px;border-bottom-width:1px;border-left-width:1px}
+.br{bottom:38px;right:38px;border-bottom-width:1px;border-right-width:1px}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 100% at 50% 42%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.42) 100%)}
+.amana{position:absolute;font-family:var(--arabic);color:var(--gold);opacity:0.05;user-select:none;line-height:1;white-space:nowrap}
+.display{font-family:var(--display);font-weight:360;font-optical-sizing:auto;line-height:1.02;letter-spacing:-0.015em}
+.mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:0.32em;font-weight:400;color:rgba(216,194,144,0.66);font-size:13px}
+.gold{color:var(--gold)} .golds{color:var(--golds)}
+.rule{height:1px;background:linear-gradient(90deg,rgba(198,168,103,0.55),rgba(198,168,103,0))}
+.wordmark{font-family:var(--display);font-weight:380;letter-spacing:0.16em;font-size:24px}
+.wordmark .dotai{color:var(--gold);font-style:italic;font-weight:340}
+.pip{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 1px rgba(198,168,103,0.6);flex:0 0 auto;margin-top:6px}
+</style></head>
+<body><div class="stage">
+<div style="position:absolute;left:0;right:0;top:0;bottom:150px;padding:100px 110px 0;display:flex;flex-direction:column">
+  <div class="mono">Practical fix</div>
+  <div class="display" style="font-size:48px;margin:16px 0 30px;max-width:760px">Manual invoice chasing eats 6 hours a week in most services businesses.</div>
+  <div style="display:flex;gap:22px;padding:20px 0;border-bottom:1px solid rgba(198,168,103,0.10)">
+      <div class="mono gold" style="font-size:20px;flex:0 0 auto">01</div>
+      <div style="font-size:22px;color:rgba(236,234,224,0.85)">Track due dates in one shared sheet, not five inboxes</div></div><div style="display:flex;gap:22px;padding:20px 0;border-bottom:1px solid rgba(198,168,103,0.10)">
+      <div class="mono gold" style="font-size:20px;flex:0 0 auto">02</div>
+      <div style="font-size:22px;color:rgba(236,234,224,0.85)">Auto-send a reminder at +3 and +7 days overdue</div></div><div style="display:flex;gap:22px;padding:20px 0;border-bottom:1px solid rgba(198,168,103,0.10)">
+      <div class="mono gold" style="font-size:20px;flex:0 0 auto">03</div>
+      <div style="font-size:22px;color:rgba(236,234,224,0.85)">Flag anything past 14 days for a human call</div></div>
+  <div style="margin-top:28px;font-size:16px;color:rgba(216,194,144,0.7)">No platform subscription needed — this runs on what you already have.</div>
+</div>
+<div style="position:absolute;left:84px;right:84px;bottom:84px;display:flex;justify-content:space-between;align-items:flex-end"><div class="wordmark">EMANET <span class="dotai">AI</span></div><div class="mono" style="font-size:12px;color:rgba(216,194,144,0.52)">emanet-ai.com</div></div>
+
+<div class="frame"></div>
+<span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+<div class="vig"></div></div></body></html>

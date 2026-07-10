@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Spline+Sans+Mono:wght@300..600&family=Amiri:wght@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bone:#ECEAE0;--emer:#143A28;--ink:#0B130E;--gold:#C6A867;--golds:#D8C290;
+--display:"Fraunces",Georgia,serif;--body:"Switzer","Helvetica Neue",Arial,sans-serif;
+--mono:"Spline Sans Mono",ui-monospace,monospace;--arabic:"Amiri",serif}
+html,body{width:1080px;height:1080px;overflow:hidden}
+.stage{position:relative;width:1080px;height:1080px;
+ background:radial-gradient(120% 80% at 80% -8%, rgba(20,58,40,0.55) 0%, rgba(20,58,40,0) 46%),
+  radial-gradient(140% 120% at 6% 112%, rgba(16,43,30,0.60) 0%, rgba(16,43,30,0) 50%),
+  radial-gradient(120% 92% at 50% 30%, #10201A 0%, var(--ink) 62%, #060B08 100%);
+ color:var(--bone);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow:hidden}
+.frame{position:absolute;inset:46px;border:1px solid rgba(198,168,103,0.16);pointer-events:none}
+.tick{position:absolute;width:20px;height:20px;border:0 solid var(--gold);opacity:0.55}
+.tl{top:38px;left:38px;border-top-width:1px;border-left-width:1px}
+.tr{top:38px;right:38px;border-top-width:1px;border-right-width:1px}
+.bl{bottom:38px;left:38px;border-bottom-width:1px;border-left-width:1px}
+.br{bottom:38px;right:38px;border-bottom-width:1px;border-right-width:1px}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 100% at 50% 42%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.42) 100%)}
+.amana{position:absolute;font-family:var(--arabic);color:var(--gold);opacity:0.05;user-select:none;line-height:1;white-space:nowrap}
+.display{font-family:var(--display);font-weight:360;font-optical-sizing:auto;line-height:1.02;letter-spacing:-0.015em}
+.mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:0.32em;font-weight:400;color:rgba(216,194,144,0.66);font-size:13px}
+.gold{color:var(--gold)} .golds{color:var(--golds)}
+.rule{height:1px;background:linear-gradient(90deg,rgba(198,168,103,0.55),rgba(198,168,103,0))}
+.wordmark{font-family:var(--display);font-weight:380;letter-spacing:0.16em;font-size:24px}
+.wordmark .dotai{color:var(--gold);font-style:italic;font-weight:340}
+.pip{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 1px rgba(198,168,103,0.6);flex:0 0 auto;margin-top:6px}
+</style></head>
+<body><div class="stage">
+<div class="amana" style="font-size:480px;left:50%;top:50%;transform:translate(-50%,-50%)">أمانة</div>
+<div style="position:absolute;left:0;right:0;top:0;bottom:150px;padding:0 120px;display:flex;flex-direction:column;justify-content:center">
+  <div><svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+  <defs><filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+    <feGaussianBlur stdDeviation="2.00" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <radialGradient id="halo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#C6A867" stop-opacity="0.14"/>
+    <stop offset="60%" stop-color="#C6A867" stop-opacity="0.04"/><stop offset="100%" stop-color="#C6A867" stop-opacity="0"/></radialGradient></defs>
+  <circle cx="100.0" cy="100.0" r="92.00" fill="url(#halo)"/>
+  <polygon points="132.15,22.39 177.61,67.85 177.61,132.15 132.15,177.61 67.85,177.61 22.39,132.15 22.39,67.85 67.85,22.39" stroke="#5E9B7A" stroke-width="1.30" stroke-linejoin="round"/>
+  <circle cx="100.0" cy="100.0" r="72.24" stroke="#D8C290" stroke-opacity="0.45" stroke-width="0.91"/>
+  <polygon points="100.00,39.52 142.77,57.23 160.48,100.00 142.77,142.77 100.00,160.48 57.23,142.77 39.52,100.00 57.23,57.23" stroke="#C6A867" stroke-width="1.30" stroke-linejoin="round"/>
+  <line x1="110.93" y1="73.61" x2="123.14" y2="44.12" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="126.39" y1="89.07" x2="155.88" y2="76.86" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="126.39" y1="110.93" x2="155.88" y2="123.14" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="110.93" y1="126.39" x2="123.14" y2="155.88" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="89.07" y1="126.39" x2="76.86" y2="155.88" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="73.61" y1="110.93" x2="44.12" y2="123.14" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="73.61" y1="89.07" x2="44.12" y2="76.86" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/><line x1="89.07" y1="73.61" x2="76.86" y2="44.12" stroke="#D8C290" stroke-width="0.91" opacity="0.45"/>
+  <circle cx="100.0" cy="100.0" r="28.56" stroke="#C6A867" stroke-width="1.30"/>
+  <circle cx="100.0" cy="100.0" r="13.44" stroke="#5E9B7A" stroke-width="1.30"/>
+  <circle cx="100.00" cy="16.00" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="159.40" cy="40.60" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="184.00" cy="100.00" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="159.40" cy="159.40" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="100.00" cy="184.00" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="40.60" cy="159.40" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="16.00" cy="100.00" r="2.40" fill="#C6A867" filter="url(#glow)"/><circle cx="40.60" cy="40.60" r="2.40" fill="#C6A867" filter="url(#glow)"/>
+</svg></div>
+  <div class="display gold" style="font-style:italic;font-size:52px;margin:36px 0 22px;max-width:760px">If you can't read the source, you don't own the software.</div>
+  <div style="font-size:20px;color:rgba(236,234,224,0.68);max-width:640px;line-height:1.6">Most tools rent you access and call it ownership. We think that's backwards.</div>
+  <div class="rule" style="width:120px;margin:28px 0 22px"></div>
+  <div style="font-size:17px;color:rgba(216,194,144,0.7)">Every handover ships with the full repo, no obfuscation, no locked seats.</div>
+</div>
+<div style="position:absolute;left:84px;right:84px;bottom:84px;display:flex;justify-content:space-between;align-items:flex-end"><div class="wordmark">EMANET <span class="dotai">AI</span></div><div class="mono" style="font-size:12px;color:rgba(216,194,144,0.52)">emanet-ai.com</div></div>
+
+<div class="frame"></div>
+<span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+<div class="vig"></div></div></body></html>
