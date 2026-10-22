@@ -384,6 +384,10 @@ export default function Deck() {
       function buildThread() {
         if (!layer || !base || !live || !tm) return;
         var W = document.documentElement.clientWidth;
+        /* drop the layer's old height first: it is part of the page's scroll height, so
+           measuring with it in place kept the page as tall as it ever was (a closed FAQ
+           or a switch back to English left empty space under the footer) */
+        layer.style.height = '0px';
         var H = docHeight();
 
         layer.setAttribute('width', W);
@@ -402,12 +406,14 @@ export default function Deck() {
         });
         if (lowest) {
           var lr = lowest.getBoundingClientRect();
-          /* corner mark is position:fixed — convert its viewport point to
-             document space so the thread stays born from it after a
-             resize that happens while the page is scrolled. */
-          startX = lr.left + lr.width / 2 + window.pageXOffset;
-          startY = lr.top + lr.height / 2 + window.pageYOffset;
-        } else { startX = 70; startY = 80 + window.pageYOffset; }
+          /* corner mark is position:fixed, so its viewport point IS its spot at the top
+             of the page. Adding the scroll offset (as before) moved the thread's start to
+             wherever the reader was at each rebuild (every phone address-bar resize,
+             language switch, late font/image load), so the line jumped back up the page
+             from there and the gold stopped drawing. */
+          startX = lr.left + lr.width / 2;
+          startY = lr.top + lr.height / 2;
+        } else { startX = 70; startY = 80; }
 
         /* mobile: the serpentine collapses to a vertical line; the corner node sits
            ~38px in, right over the text. Pin the origin + loop-close to the same thin
@@ -903,6 +909,9 @@ export default function Deck() {
       /* scroll/resize handlers (named so cleanup can remove them) */
       function onScrollWin() { onScroll(); navState(); }
       function onResize() { clearTimeout(resizeTimer); resizeTimer = setTimeout(rebuild, 180); }
+      /* the page also changes height with no window resize (a FAQ answer opens, an
+         image or font lands): re-lay the thread then too, or it misses every anchor below */
+      var bodyRO: any = null;
 
       /* =====================================================
          BOOT
@@ -939,6 +948,7 @@ export default function Deck() {
 
         /* relayout */
         window.addEventListener('resize', onResize);
+        if (window.ResizeObserver) { bodyRO = new ResizeObserver(onResize); bodyRO.observe(document.body); }
         if (document.fonts && document.fonts.ready) { document.fonts.ready.then(rebuild); }
         window.addEventListener('load', rebuild);
 
@@ -1035,6 +1045,7 @@ export default function Deck() {
         copyTimers.forEach(function (t: any) { clearTimeout(t); });
         window.removeEventListener('scroll', onScrollWin);
         window.removeEventListener('resize', onResize);
+        if (bodyRO) bodyRO.disconnect();
         window.removeEventListener('load', rebuild);
         window.removeEventListener('wheel', gateAdvance);
         window.removeEventListener('touchmove', gateAdvance);
